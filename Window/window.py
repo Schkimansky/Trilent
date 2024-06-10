@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.Qt import QTimer
 from Trilent.Utility import get_in_pixels, get_as_qt
 from functools import lru_cache
-import cProfile
+from Trilent.Widgets import PositionTypes
 
 
 class Window:
@@ -22,7 +22,7 @@ class Window:
 
         super().__init__()
         self._update_timer = None
-
+        self._positionType = PositionTypes.PLACE
         self._dpi = self.get_dpi()
 
         if background_color != 'white':
