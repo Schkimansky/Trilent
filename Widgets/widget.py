@@ -1,4 +1,5 @@
 from enum import Enum
+from Trilent.Window import Window
 
 
 class PositionTypes(Enum):
@@ -8,15 +9,9 @@ class PositionTypes(Enum):
 
 class Widget:
     def __init__(self,
-                 parent,
+                 parent: Window,
                  width: int,
                  height: int,
                  positioning: str = 'auto'):
         if positioning == 'auto':
-            positioning = self._determine_position_type(parent)
-
-    def _determine_position_type(self, parent) -> PositionTypes:
-        if parent._positionType == PositionTypes.PLACE:
-            print('absolute place')
-        elif parent._positionType == PositionTypes.BOX:
-            print('boxing')
+            positioning = parent._positionType
