@@ -51,10 +51,10 @@ class Window:
     def _get_holder(self): return self._window
 
 
-def trilent():
-    window = Window()
-    window.run(start=lambda: window.close())
-
-
 if __name__ == "__main__":
-    trilent()
+    from Trilent.Widgets import Widget
+    window = Window()
+
+    widget = Widget(window, 200, 200)
+
+    window.run()

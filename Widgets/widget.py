@@ -1,5 +1,3 @@
-from PyQt5.QtWidgets import QPushButton
-from Trilent.Window import Window
 from enum import Enum
 
 
@@ -10,8 +8,13 @@ class PositionTypes(Enum):
 
 class Widget:
     def __init__(self,
-                 parent: Window,
+                 parent,
                  width: int,
                  height: int,
                  positioning: str = 'auto'):
-        pass
+        if positioning == 'auto':
+            positioning = self._determine_position_type(parent)
+
+    def _determine_position_type(self, parent) -> PositionTypes:
+        if parent._positionType == PositionTypes.PLACE:
+            print('absolute place')
