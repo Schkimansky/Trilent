@@ -18,3 +18,5 @@ class Widget:
     def _determine_position_type(self, parent) -> PositionTypes:
         if parent._positionType == PositionTypes.PLACE:
             print('absolute place')
+        elif parent._positionType == PositionTypes.BOX:
+            print('boxing')
