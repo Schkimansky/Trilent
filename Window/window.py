@@ -60,11 +60,13 @@ if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
     window = Window()
 
-    box = Box(window, 200, 200)
+    print('Setting box')
+    box = Box(window, 200, 200, background_color='red')
+    print('Placing box')
     box.place(100, 100)
 
-    box2 = Box(box, 200, 200)
-
-    widget = Widget(box2, 200, 200, excess_color='lime')
+    print('Setting sub box / widget')
+    box2 = Box(box, 100, 100, background_color='green')
+    widget = Widget(box2, 70, 70, excess_color='yellow')
 
     window.run()

@@ -14,7 +14,6 @@ class Box:
                  # Color
                  background_color='#272727'):
 
-        super().__init__()
         self._parent = parent
         self._positionType = PositionTypes.BOX
         self._dpi = parent.get_dpi()
@@ -22,11 +21,14 @@ class Box:
 
         self._frame = QFrame(parent._get_holder())
 
-        if background_color != 'white':
-            self._frame.setStyleSheet(f"background-color: {get_as_qt(background_color)};")
-
+        # Setup properties
+        self._frame.setStyleSheet(f"background-color: {get_as_qt(background_color)};")
         self._frame.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi),
                                 get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
+
+        # Parent is also a box
+        if self._parent._positionType == PositionTypes.BOX:
+            self._parent._widget_box_add(self)
 
     def place(self, x: int = 100, y: int = 100):
         assert self._parent._positionType != PositionTypes.BOX, TypeError("You cant place a box whose parent is also a box.")
@@ -41,4 +43,15 @@ class Box:
         print('New widget added to box')
         print(trilent_widget)
 
+        trilent_widget._box_signal_show()
+        trilent_widget._box_signal_update_position(0, 0)
+
     def _get_holder(self): return self._frame
+
+    def _box_signal_show(self):
+        self._frame.show()
+
+    def _box_signal_update_position(self, x, y):
+        geometry = self._frame.geometry()
+        self._frame.setGeometry(x, y, geometry.width(), geometry.height())
+        print('widget box was placed!')
