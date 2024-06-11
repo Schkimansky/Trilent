@@ -7,8 +7,8 @@ from Trilent.Widgets import PositionTypes
 
 
 class Window:
-    _app = QApplication(argv)
-    _window = QMainWindow()
+    _app: QApplication = QApplication(argv)
+    _window: QMainWindow = QMainWindow()
 
     def __init__(self,
                  # Utility
@@ -27,16 +27,17 @@ class Window:
 
         if background_color != 'white':
             self._window.setStyleSheet(f"background-color: {get_as_qt(background_color)};")
+
         self._window.setWindowTitle(title)
         self._window.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi),
                                  get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
 
     def run(self, update=None, start=None, update_speed: int = 0):
-        if update:
+        if update is not None:
             self._update_timer = QTimer(self._window)
             self._update_timer.timeout.connect(update)
             self._update_timer.start(update_speed)
-        if start:
+        if start is not None:
             timer = QTimer(self._window)
             timer.singleShot(0, start)
 
@@ -48,13 +49,22 @@ class Window:
 
     @lru_cache
     def get_dpi(self): return self._app.desktop().logicalDpiX()
+
+    def _widget_box_add(self, trilent_widget):
+        raise RuntimeError('Place mode was overriden as box mode')
+
     def _get_holder(self): return self._window
 
 
 if __name__ == "__main__":
-    from Trilent.Widgets import Widget
+    from Trilent.Widgets import Widget, Box
     window = Window()
 
-    widget = Widget(window, 200, 200)
+    box = Box(window, 200, 200)
+    box.place(100, 100)
+
+    box2 = Box(box, 200, 200)
+
+    widget = Widget(box2, 200, 200, excess_color='lime')
 
     window.run()
