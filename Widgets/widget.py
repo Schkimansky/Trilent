@@ -13,7 +13,7 @@ class Widget:
                  parent,
                  width: int | str,
                  height: int | str,
-                 excess_color: str = 'red'):
+                 excess_color: str = 'transparent'):
 
         self._window = QFrame(parent._get_holder())
         self._window.setGeometry(0, 0, get_in_pixels(width, parent.get_dpi()), get_in_pixels(height, parent.get_dpi()))
