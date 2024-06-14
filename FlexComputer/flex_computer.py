@@ -34,7 +34,7 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
     return positions
 
 
-@lru_cache(maxsize=7000)
+@lru_cache(maxsize=1000)
 def HorizontalBox(widths: tuple[int, ...], heights: tuple[int, ...],
                  box_width: int | str = 'auto', box_height: int | str = 'auto',
                  alignment: str = 'start', side_alignment: str = 'start',
@@ -43,12 +43,13 @@ def HorizontalBox(widths: tuple[int, ...], heights: tuple[int, ...],
     if alignment == 'start':
         return calculate_start_positions(widths, heights, side_alignment, (box_width, box_height), wrap, gap, vertical_gap)
 
-def benchmark():
-    w = (100, 100, 100) * 10000
-    h = (30, 30, 30) * 10000
 
-    for _ in range(60):
-        HorizontalBox(w, h, gap=5)
+w = (100, 5, 100) * 100000
+h = (30, 5, 30) * 100000
+
+
+def benchmark():
+    HorizontalBox(w, h)
 
 
 if __name__ == '__main__':
