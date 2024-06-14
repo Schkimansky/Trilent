@@ -1,46 +1,56 @@
+from functools import lru_cache
 
-def calculate_start_positions(lengths: list[int], flex_box_size: tuple[int | str, int | str]) -> list[list[int]]:
-    extra_space: list[int] = [0, 0]
-    minimum_box_space: list[int] = [0, 0]
+
+def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
+                              side_alignment: str,
+                              flex_box_size: tuple[int | str, int | str],
+                              wrap: bool, gap: int, vertical_gap: int) -> list[list[int]]:
+    """ This function calculates the starting positions for widgets in a flexbox layout. """
+
+    x, y = 0, 0
     positions: list[list[int]] = []
-    box_size: list[int] = [0, 0]
+    max_height = max(heights)
 
-    for length in lengths:
-        positions.append(extra_space)
-        # Make x ( / y / side / main) room for next widget
-        extra_space[0] += length
+    # Handle main alignment
+    for i, width in enumerate(widths):
+        # If wrapping is needed and current x exceeds the flex box width
+        if flex_box_size[0] != 'auto' and wrap and x + width > flex_box_size[0]:
+            x = 0
+            y += (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
+
+        positions.append([x + gap, y])
+        x += width + gap
+
+    max_widget_height = max_height + vertical_gap
+    flex_box_height = flex_box_size[1] if flex_box_size[1] != 'auto' else max_widget_height
+
+    # Handle side alignment
+    if side_alignment == 'center':
+        center_y = flex_box_height // 2
+        positions = [[pos[0] + gap, pos[1] + center_y - (max_widget_height // 2)] for pos in positions]
+    elif side_alignment == 'end':
+        positions = [[pos[0] + gap, pos[1] + (flex_box_height - max_widget_height)] for pos in positions]
 
     return positions
 
 
-class Computer:
-    def __init__(self, widths: list[int], heights: list[int],
-                 flexing_direction: str = 'horizontal',
+@lru_cache(maxsize=7000)
+def HorizontalBox(widths: tuple[int, ...], heights: tuple[int, ...],
                  box_width: int | str = 'auto', box_height: int | str = 'auto',
-                 alignment: str = 'start', side_alignment: str = 'start'):
+                 alignment: str = 'start', side_alignment: str = 'start',
+                 wrap: bool = False, gap: int = 5, vertical_gap: int = 5):
 
-        main_axis_lengths = widths if flexing_direction == 'horizontal' else heights
-        side_axis_lengths = heights if flexing_direction == 'horizontal' else widths
-        flex_box_size = (box_width, box_height)
+    if alignment == 'start':
+        return calculate_start_positions(widths, heights, side_alignment, (box_width, box_height), wrap, gap, vertical_gap)
 
-        match alignment:
-            case "start":
-                main_axis = calculate_start_positions(main_axis_lengths, flex_box_size)
-            case _:
-                raise ValueError(f'Invalid alignment name: {alignment}')
+def benchmark():
+    w = (100, 100, 100) * 10000
+    h = (30, 30, 30) * 10000
 
-        match side_alignment:
-            case "start":
-                side_axis = calculate_start_positions(side_axis_lengths, flex_box_size)
-            case _:
-                raise ValueError(f'Invalid side alignment name: {side_alignment}')
-
-        print(main_axis)
-        print("next")
-        print(side_axis)
+    for _ in range(60):
+        HorizontalBox(w, h, gap=5)
 
 
 if __name__ == '__main__':
-    width = [100, 100, 100]
-    height = [100, 100, 100]
-    Computer(width, height)
+    import cProfile
+    cProfile.run('benchmark()')

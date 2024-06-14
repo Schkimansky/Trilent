@@ -32,6 +32,7 @@ class Window:
         self._window.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi),
                                  get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
 
+    # Basic Methods
     def run(self, update=None, start=None, update_speed: int = 0):
         if update is not None:
             self._update_timer = QTimer(self._window)
@@ -47,26 +48,47 @@ class Window:
     def close(self):
         self._app.quit()
 
+    # Utility Methods
     @lru_cache
     def get_dpi(self): return self._app.desktop().logicalDpiX()
 
-    def _widget_box_add(self, trilent_widget):
-        raise RuntimeError('Place mode was overriden as box mode')
+    def get_size(self):
+        size = self._window.size()
+        return size.width(), size.height()
 
+    # Property Utility Methods
+    @property
+    def width(self): return self._window.size().width()
+    @property
+    def height(self): return self._window.size().height()
+
+    # Protected Library use case Methods
+    def _widget_box_add(self, trilent_widget): raise RuntimeError('Place mode was overriden as box mode')
     def _get_holder(self): return self._window
 
 
 if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
+    from Trilent.FlexComputer.flex_computer import HorizontalBox
     window = Window()
 
-    print('Setting box')
-    box = Box(window, 200, 200, background_color='red')
-    print('Placing box')
-    box.place(100, 100)
+    CHILDREN = 50
+    WIDTH = 100
+    HEIGHT = 100
 
-    print('Setting sub box / widget')
-    box2 = Box(box, 100, 100, background_color='green')
-    widget = Widget(box2, 70, 70, excess_color='yellow')
+    widget_color = 'green'
 
-    window.run()
+    children: list[Widget] = []
+
+    [children.append(Widget(window, WIDTH, HEIGHT, excess_color=widget_color)) for _ in range(CHILDREN + 1)]
+
+    widths = tuple(child.width for child in children)
+    heights = tuple(child.height for child in children)
+
+    def update():
+        main_axis = HorizontalBox(widths, heights, window.width, window.height,
+                                  wrap=True, side_alignment='start')
+
+        [children[i].set_position(*main_axis[i]) for i in range(len(children))]
+
+    window.run(update, update)

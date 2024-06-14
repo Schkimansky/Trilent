@@ -15,9 +15,9 @@ class Widget:
                  height: int | str,
                  excess_color: str = 'transparent'):
 
-        self._window = QFrame(parent._get_holder())
-        self._window.setGeometry(0, 0, get_in_pixels(width, parent.get_dpi()), get_in_pixels(height, parent.get_dpi()))
-        self._window.setStyleSheet(f"""background-color: {get_as_qt(excess_color)};""")
+        self._frame = QFrame(parent._get_holder())
+        self._frame.setGeometry(0, 0, get_in_pixels(width, parent.get_dpi()), get_in_pixels(height, parent.get_dpi()))
+        self._frame.setStyleSheet(f"""background-color: {get_as_qt(excess_color)};""")
 
         self._positioning = parent._positionType
         if self._positioning == PositionTypes.BOX:
@@ -26,17 +26,25 @@ class Widget:
     def place(self, x: int = 100, y: int = 100):
         assert self._positioning != PositionTypes.BOX, TypeError("You cant place a widget whose parent is a box.")
 
-        geometry = self._window.geometry()
-        self._window.setGeometry(x, y, geometry.width(), geometry.height())
-        self._window.show()
+        geometry = self._frame.geometry()
+        self._frame.setGeometry(x, y, geometry.width(), geometry.height())
+        self._frame.show()
 
-    def _box_signal_show(self):
-        self._window.show()
+    @property
+    def width(self): return self._frame.width()
+    @property
+    def height(self): return self._frame.height()
+    @property
+    def x(self): return self._frame.x()
+    @property
+    def y(self): return self._frame.y()
 
-    def _box_signal_update_position(self, x, y):
-        geometry = self._window.geometry()
-        self._window.setGeometry(x, y, geometry.width(), geometry.height())
-        print('box signal update')
+    def show(self): self._frame.show()
+    def hide(self): self._frame.hide()
+
+    def set_position(self, x, y):
+        geometry = self._frame.geometry()
+        self._frame.setGeometry(x, y, geometry.width(), geometry.height())
 
     def _get_holder(self):
-        return self._window
+        return self._frame
