@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     def update():
         main_axis = HorizontalBox(widths, heights, window.width, window.height,
-                                  wrap=True, side_alignment='start')
+                                  wrap=True, side_alignment='center')
 
         [children[i].set_position(*main_axis[i]) for i in range(len(children))]
 

@@ -10,6 +10,8 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
     x, y = 0, 0
     positions: list[list[int]] = []
     max_height = max(heights)
+    minimum_flexbox_height = flex_box_size[1] if flex_box_size[1] != 'auto' else None
+    wraps = 1
 
     # Handle main alignment
     for i, width in enumerate(widths):
@@ -17,17 +19,25 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
         if flex_box_size[0] != 'auto' and wrap and x + width > flex_box_size[0]:
             x = 0
             y += (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
+            wraps += 1
+
+            if minimum_flexbox_height is None:
+                minimum_flexbox_height = (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
+            else:
+                minimum_flexbox_height += (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
 
         positions.append([x + gap, y])
         x += width + gap
 
-    max_widget_height = max_height + vertical_gap
+    max_widget_height = minimum_flexbox_height + vertical_gap
     flex_box_height = flex_box_size[1] if flex_box_size[1] != 'auto' else max_widget_height
 
     # Handle side alignment
     if side_alignment == 'center':
-        center_y = flex_box_height // 2
-        positions = [[pos[0] + gap, pos[1] + center_y - (max_widget_height // 2)] for pos in positions]
+        average_height = sum(heights) // len(heights)
+        # Things like vertical gap and minimum flexbox height are divided by 2 to give them a equal vertical gap from \
+        # The bottom and top
+        positions = [[pos[0] + gap, (pos[1] + flex_box_height - (minimum_flexbox_height // 2)) - ((average_height // 2) + (vertical_gap // 2))] for pos in positions]
     elif side_alignment == 'end':
         positions = [[pos[0] + gap, pos[1] + (flex_box_height - max_widget_height)] for pos in positions]
 
