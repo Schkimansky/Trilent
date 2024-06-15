@@ -11,7 +11,6 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
     positions: list[list[int]] = []
     max_height = max(heights)
     minimum_flexbox_height = flex_box_size[1] if flex_box_size[1] != 'auto' else None
-    wraps = 1
 
     # Handle main alignment
     for i, width in enumerate(widths):
@@ -19,7 +18,6 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
         if flex_box_size[0] != 'auto' and wrap and x + width > flex_box_size[0]:
             x = 0
             y += (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
-            wraps += 1
 
             if minimum_flexbox_height is None:
                 minimum_flexbox_height = (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
