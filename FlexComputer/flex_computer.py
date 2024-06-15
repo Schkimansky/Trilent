@@ -1,6 +1,15 @@
 from functools import lru_cache
 
 
+def fallback(positions, heights, vertical_gap) -> list[list[int, int]]:
+    y = 0
+    for i, pos in enumerate(positions):
+        positions[i] = [pos[0], y]
+        y += heights[i] + vertical_gap
+
+    return positions
+
+
 def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
                               side_alignment: str,
                               flex_box_size: tuple[int | str, int | str],
@@ -10,27 +19,35 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
     x, y = 0, 0
     positions: list[list[int]] = []
     max_height = max(heights)
-    minimum_flexbox_height = flex_box_size[1] if flex_box_size[1] != 'auto' else None
+    next_column_increase_amount = (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
+    minimum_flexbox_height = flex_box_size[1] if flex_box_size[1] != 'auto' else next_column_increase_amount
+    wraps = 1
 
     # Handle main alignment
     for i, width in enumerate(widths):
         # If wrapping is needed and current x exceeds the flex box width
-        if flex_box_size[0] != 'auto' and wrap and x + width > flex_box_size[0]:
+        if flex_box_size[0] != 'auto' and wrap and x + width > flex_box_size[0] and i != 0:
             x = 0
-            y += (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
+            y += next_column_increase_amount
+            wraps += 1
 
-            if minimum_flexbox_height is None:
-                minimum_flexbox_height = (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
-            else:
-                minimum_flexbox_height += (max_height + vertical_gap) if side_alignment != 'end' else -(max_height + vertical_gap)
+            minimum_flexbox_height += next_column_increase_amount
 
-        positions.append([x + gap, y])
+        positions.append([x, y])
         x += width + gap
+
+    print(wraps, len(widths))
+
+    # Handle side alignment
+
+    # Fix: When Flex_box_width is so low that all the widgets wrap on top,
+    # It adds y to max_height instead of last widgets height
+    if wraps == len(widths):
+        positions = fallback(positions, heights, vertical_gap)
 
     max_widget_height = minimum_flexbox_height + vertical_gap
     flex_box_height = flex_box_size[1] if flex_box_size[1] != 'auto' else max_widget_height
 
-    # Handle side alignment
     if side_alignment == 'center':
         average_height = sum(heights) // len(heights)
         # Things like vertical gap and minimum flexbox height are divided by 2 to give them a equal vertical gap from \

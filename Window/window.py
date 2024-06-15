@@ -70,24 +70,26 @@ class Window:
 if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
     from Trilent.FlexComputer.flex_computer import HorizontalBox
+    from random import randint
     window = Window()
 
-    CHILDREN = 50
+    CHILDREN = 4
     WIDTH = 100
     HEIGHT = 100
+    randomness = 50
 
     widget_color = 'green'
 
     children: list[Widget] = []
 
-    [children.append(Widget(window, WIDTH, HEIGHT, excess_color=widget_color)) for _ in range(CHILDREN + 1)]
+    [children.append(Widget(window, WIDTH, HEIGHT // i, excess_color=widget_color)) for i in range(1, CHILDREN + 1)]
 
     widths = tuple(child.width for child in children)
     heights = tuple(child.height for child in children)
 
     def update():
         main_axis = HorizontalBox(widths, heights, window.width, window.height,
-                                  wrap=True, side_alignment='center')
+                                  wrap=True, side_alignment='start')
 
         [children[i].set_position(*main_axis[i]) for i in range(len(children))]
 
