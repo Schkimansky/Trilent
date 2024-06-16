@@ -71,20 +71,25 @@ if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
     from Trilent.FlexComputer.flex_computer import HorizontalBox
     from random import randint
-    window = Window()
 
-    CHILDREN = 15
-    WIDTH = 100
+    #
+    # Values
+    #
+
+    CHILDREN = 100 - 4
+    WIDTH = 50
     HEIGHT = WIDTH
     GAP = 1
     VGAP = GAP
-    randomness = 0
+    randomness = 20
+    WIDGET_COLOR = 'red'
+    DOWN_SPEED = 1
+    INITIAL_Y_POSITION = 0
 
-    widget_color = 'green'
+    window = Window()
 
     children: list[Widget] = []
-
-    [children.append(Widget(window, WIDTH, HEIGHT + randint(-randomness, randomness), excess_color=widget_color)) for i in range(1, CHILDREN + 1)]
+    [children.append(Widget(window, WIDTH, HEIGHT + (randint(-randomness, randomness) if i <= CHILDREN // 3 else 0), excess_color=WIDGET_COLOR)) for i in range(1, CHILDREN + 1)]
 
     widths = tuple(child.width for child in children)
     heights = tuple(child.height for child in children)
