@@ -73,24 +73,26 @@ if __name__ == "__main__":
     from random import randint
     window = Window()
 
-    CHILDREN = 4
+    CHILDREN = 15
     WIDTH = 100
-    HEIGHT = 100
-    randomness = 50
+    HEIGHT = WIDTH
+    GAP = 1
+    VGAP = GAP
+    randomness = 0
 
     widget_color = 'green'
 
     children: list[Widget] = []
 
-    [children.append(Widget(window, WIDTH, HEIGHT // i, excess_color=widget_color)) for i in range(1, CHILDREN + 1)]
+    [children.append(Widget(window, WIDTH, HEIGHT + randint(-randomness, randomness), excess_color=widget_color)) for i in range(1, CHILDREN + 1)]
 
     widths = tuple(child.width for child in children)
     heights = tuple(child.height for child in children)
 
     def update():
-        main_axis = HorizontalBox(widths, heights, window.width, window.height,
-                                  wrap=True, side_alignment='start')
+        main_axis = HorizontalBox(widths, heights, window.width, window.height, wrap=True, side_alignment='end', gap=GAP, vertical_gap=VGAP)
 
         [children[i].set_position(*main_axis[i]) for i in range(len(children))]
+
 
     window.run(update, update)
