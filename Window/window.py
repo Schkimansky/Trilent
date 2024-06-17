@@ -69,35 +69,39 @@ class Window:
 
 if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
-    from Trilent.FlexComputer.flex_computer import HorizontalBox
+    from Trilent.FlexComputer.main import HorizontalBox
     from random import randint
 
     #
     # Values
     #
 
-    CHILDREN = 100 - 4
+    CHILDREN = 10
     WIDTH = 50
     HEIGHT = WIDTH
     GAP = 1
     VGAP = GAP
-    randomness = 20
+    randomness = 0
     WIDGET_COLOR = 'red'
     DOWN_SPEED = 1
     INITIAL_Y_POSITION = 0
+    PERCENTAGE = 1.1
+    ALIGNMENT = 'start'
+    SIDE_ALIGNMENT = 'center'
 
     window = Window()
 
     children: list[Widget] = []
-    [children.append(Widget(window, WIDTH, HEIGHT + (randint(-randomness, randomness) if i <= CHILDREN // 3 else 0), excess_color=WIDGET_COLOR)) for i in range(1, CHILDREN + 1)]
+    [children.append(Widget(window, WIDTH, HEIGHT + randint(-randomness, randomness), excess_color=WIDGET_COLOR)) for i in range(1, CHILDREN + 1)]
 
     widths = tuple(child.width for child in children)
     heights = tuple(child.height for child in children)
 
     def update():
-        main_axis = HorizontalBox(widths, heights, window.width, window.height, wrap=True, side_alignment='end', gap=GAP, vertical_gap=VGAP)
+        main_axis = HorizontalBox(widths, heights, window.width, window.height, wrap=True, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
 
-        [children[i].set_position(*main_axis[i]) for i in range(len(children))]
+        for i, child in enumerate(children):
+            child.set_position(*main_axis[i])
 
 
     window.run(update, update)
