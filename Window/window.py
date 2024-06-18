@@ -87,7 +87,7 @@ if __name__ == "__main__":
     INITIAL_Y_POSITION = 0
     PERCENTAGE = 1.1
     ALIGNMENT = 'end'
-    SIDE_ALIGNMENT = 'start'
+    SIDE_ALIGNMENT = 'end'
 
     window = Window()
 
@@ -100,8 +100,7 @@ if __name__ == "__main__":
     def update():
         main_axis = box(widths, heights, window.width, window.height, wrap=True, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
 
-        for i, child in enumerate(children):
-            child.set_position(*main_axis[i])
+        [child.set_position(*main_axis[i]) for i, child in enumerate(children)]
 
 
     window.run(update, update)

@@ -11,13 +11,15 @@ def calculate_end_positions(widths: tuple[int, ...], heights: tuple[int, ...], f
 
     positions: list[list[int]] = []
     column_heights: list[int] = []
-    wraps = 1
-    total_height = 0
-    total_width = 0
-    total_width_calculated = False
+    column_widths: list[list[int]] = [[]]
+    column_widths_map: dict[int, int] = {}
+    wraps: int = 1
+    total_height: int = 0
+    total_width: int = 0
+    total_width_calculated: bool = False
 
-    for i, width in enumerate(widths):
-        if wrap and x + width > flex_box_size[0] and i != 0:
+    for i in range(len(widths)):
+        if wrap and x + widths[i] > flex_box_size[0] and i != 0:
             x = 0
             if side_alignment == 'end':
                 y -= max(column_heights) + vertical_gap
@@ -27,6 +29,7 @@ def calculate_end_positions(widths: tuple[int, ...], heights: tuple[int, ...], f
 
             wraps += 1
             column_heights = []
+            column_widths.append([])
             total_width_calculated = True
 
         if side_alignment == 'end':
@@ -35,9 +38,12 @@ def calculate_end_positions(widths: tuple[int, ...], heights: tuple[int, ...], f
             positions.append([x, y])
 
         column_heights.append(heights[i])
-        x += width + gap
+        column_widths[wraps - 1].append(widths[i] + gap)
+        column_widths_map[i] = wraps - 1
+
+        x += widths[i] + gap
         if not total_width_calculated:
-            total_width += width + gap
+            total_width += widths[i] + gap
 
     total_height += max(column_heights) + vertical_gap if column_heights else 0
 
@@ -51,7 +57,9 @@ def calculate_end_positions(widths: tuple[int, ...], heights: tuple[int, ...], f
         positions = [[pos[0], pos[1] + adder] for pos in positions]
 
     # End point all x positions
-    for pos in positions:
-        pos[0] += flex_box_size[0] - total_width
+    for i, pos in enumerate(positions):
+        # How do i figure out current column widths
+        pos[0] += flex_box_size[0] - sum(column_widths[column_widths_map[i]])
+        print(column_widths)
 
     return positions
