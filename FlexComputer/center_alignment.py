@@ -1,4 +1,4 @@
-from .fallback import fallback, CACHING_LIMIT, FUNCTIONS
+from .general import fallback, CACHING_LIMIT, FUNCTIONS, center_y_positions
 from functools import lru_cache
 
 
@@ -42,6 +42,7 @@ def calculate_center_positions(widths: tuple[int, ...], heights: tuple[int, ...]
 
         column_heights.append(heights[i])
         x += width + gap
+    del i
 
     # Center the last row
     if row_start_index < len(widths):
@@ -54,11 +55,9 @@ def calculate_center_positions(widths: tuple[int, ...], heights: tuple[int, ...]
 
     # Fallback is used to fix a bug, You can ignore this.
     if wraps >= len(widths):
-        positions, first_col_h, _ = fallback(positions, heights, vertical_gap, side_alignment, flex_box_size[1])
+        positions = fallback(positions, heights, vertical_gap, side_alignment, flex_box_size[1])
 
-    # Center Y Positions if requested.
     if side_alignment == 'center':
-        adder = (flex_box_size[1] // 2) - (total_height // 2)
-        positions = [[pos[0], pos[1] + adder] for pos in positions]
+        positions = center_y_positions(positions, flex_box_size, total_height)
 
     return positions

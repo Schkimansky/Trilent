@@ -24,6 +24,7 @@ class Window:
         self._update_timer = None
         self._positionType = PositionTypes.PLACE
         self._dpi = self.get_dpi()
+        self._update_functions = []
 
         if background_color != 'white':
             self._window.setStyleSheet(f"background-color: {get_as_qt(background_color)};")
@@ -35,12 +36,18 @@ class Window:
     # Basic Methods
     def run(self, update=None, start=None, update_speed: int = 0):
         if update is not None:
+            self._update_functions.append(update)
+
+        if self._update_functions:
             self._update_timer = QTimer(self._window)
-            self._update_timer.timeout.connect(update)
+
+            def update_all(functions): [func() for func in functions]
+
+            self._update_timer.timeout.connect(lambda: update_all(self._update_functions))
             self._update_timer.start(update_speed)
+
         if start is not None:
-            timer = QTimer(self._window)
-            timer.singleShot(0, start)
+            QTimer(self._window).singleShot(0, start)
 
         self._window.show()
         self._app.exec_()
@@ -62,45 +69,38 @@ class Window:
     @property
     def height(self): return self._window.size().height()
 
+    def add_update_function(self, func):
+        self._update_functions.append(func)
+
     # Protected Library use case Methods
-    def _widget_box_add(self, trilent_widget): raise RuntimeError('Place mode was overriden as box mode')
     def _get_holder(self): return self._window
 
 
 if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
-    from Trilent.FlexComputer import box
-    from random import randint
 
     #
     # Values
     #
 
-    CHILDREN = 10
-    WIDTH = 50
+    CHILDREN = 1000
+    WIDTH = 20
     HEIGHT = WIDTH
     GAP = 1
     VGAP = GAP
-    randomness = 0
-    WIDGET_COLOR = 'cornflowerblue'
-    DOWN_SPEED = 1
-    INITIAL_Y_POSITION = 0
-    PERCENTAGE = 1.1
-    ALIGNMENT = 'end'
+    WIDGET_COLOR = '16, 16, 16'
+    ALIGNMENT = 'start'
     SIDE_ALIGNMENT = 'end'
 
     window = Window()
 
-    children: list[Widget] = []
-    [children.append(Widget(window, WIDTH, HEIGHT + randint(-randomness, randomness), excess_color=WIDGET_COLOR)) for i in range(1, CHILDREN + 1)]
+    box = Box(window, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
 
-    widths = tuple(child.width for child in children)
-    heights = tuple(child.height for child in children)
+    children: list[Widget] = [Widget(box, WIDTH, HEIGHT, excess_color=WIDGET_COLOR) for _ in range(CHILDREN + 1)]
+
+    box.place(0, 0)
 
     def update():
-        main_axis = box(widths, heights, window.width, window.height, wrap=True, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
-
-        [child.set_position(*main_axis[i]) for i, child in enumerate(children)]
-
+        box.set_size(window.width, window.height)
 
     window.run(update, update)

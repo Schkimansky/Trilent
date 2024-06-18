@@ -1,4 +1,4 @@
-from .fallback import fallback, CACHING_LIMIT, FUNCTIONS
+from .general import fallback, CACHING_LIMIT, FUNCTIONS, center_y_positions
 from functools import lru_cache
 
 
@@ -34,15 +34,12 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
             positions.append([x, y])
         column_heights.append(heights[i])
         x += width + gap
+    del i
 
     total_height += max(column_heights) + vertical_gap if column_heights else 0
 
-    if wraps >= len(widths):
-        positions, first_col_h, _ = fallback(positions, heights, vertical_gap, side_alignment, flex_box_size[1])
-
-    if side_alignment == 'center':
-        adder = (flex_box_size[1] // 2) - (total_height // 2)
-        positions = [[pos[0], pos[1] + adder] for pos in positions]
+    if wraps >= len(widths): positions = fallback(positions, heights, vertical_gap, side_alignment, flex_box_size[1])
+    if side_alignment == 'center': positions = center_y_positions(positions, flex_box_size, total_height)
 
     return positions
 

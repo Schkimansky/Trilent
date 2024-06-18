@@ -15,6 +15,8 @@ class Widget:
                  height: int | str,
                  excess_color: str = 'transparent'):
 
+        self._parent = parent
+
         self._frame = QFrame(parent._get_holder())
         self._frame.setGeometry(0, 0, get_in_pixels(width, parent.get_dpi()), get_in_pixels(height, parent.get_dpi()))
         self._frame.setStyleSheet(f"""background-color: {get_as_qt(excess_color)};""")
@@ -26,6 +28,11 @@ class Widget:
     def place(self, x: int = 100, y: int = 100):
         assert self._positioning != PositionTypes.BOX, TypeError("You cant place a widget whose parent is a box.")
 
+        geometry = self._frame.geometry()
+        self._frame.setGeometry(x, y, geometry.width(), geometry.height())
+        self._frame.show()
+
+    def force_place(self, x: int = 100, y: int = 100):
         geometry = self._frame.geometry()
         self._frame.setGeometry(x, y, geometry.width(), geometry.height())
         self._frame.show()
@@ -43,8 +50,9 @@ class Widget:
     def hide(self): self._frame.hide()
 
     def set_position(self, x, y):
-        geometry = self._frame.geometry()
-        self._frame.setGeometry(x, y, geometry.width(), geometry.height())
+        self._frame.setGeometry(x, y, self._frame.width(), self._frame.height())
 
     def _get_holder(self):
         return self._frame
+
+    def get_dpi(self): return self._parent.get_dpi()
