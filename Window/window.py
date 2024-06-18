@@ -69,7 +69,7 @@ class Window:
 
 if __name__ == "__main__":
     from Trilent.Widgets import Widget, Box
-    from Trilent.FlexComputer.main import HorizontalBox
+    from Trilent.FlexComputer import box
     from random import randint
 
     #
@@ -82,12 +82,12 @@ if __name__ == "__main__":
     GAP = 1
     VGAP = GAP
     randomness = 0
-    WIDGET_COLOR = 'red'
+    WIDGET_COLOR = 'cornflowerblue'
     DOWN_SPEED = 1
     INITIAL_Y_POSITION = 0
     PERCENTAGE = 1.1
-    ALIGNMENT = 'start'
-    SIDE_ALIGNMENT = 'center'
+    ALIGNMENT = 'end'
+    SIDE_ALIGNMENT = 'start'
 
     window = Window()
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     heights = tuple(child.height for child in children)
 
     def update():
-        main_axis = HorizontalBox(widths, heights, window.width, window.height, wrap=True, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
+        main_axis = box(widths, heights, window.width, window.height, wrap=True, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
 
         for i, child in enumerate(children):
             child.set_position(*main_axis[i])
