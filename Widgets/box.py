@@ -10,17 +10,22 @@ class Box(Widget):
     def __init__(self,
                  parent,
                  # Utility
-                 width: int | str = '3 inch',
-                 height: int | str = '2 inch',
+                 width: int | str = '3 inch',        # Semi Function
+                 height: int | str = '2 inch',       # Semi Function
+
+                 # Styling
                  # Color
-                 background_color='#303030',
+                 background_color='#303030',         # Needs Reload (QML, Slow)
+                 excess_color: str = 'transparent',  # Needs Reload (PQML, Slow)
+                 # Fancy
+                 roundness: int | str = '5 inch',
+
                  # Flex Properties
                  alignment: str = 'start',
                  side_alignment: str = 'start',
                  wrap: bool = True,
                  gap: int = 5,
-                 vertical_gap: int = 5,
-                 excess_color: str = 'transparent'):
+                 vertical_gap: int = 5):
 
         super().__init__(parent, width, height, excess_color=excess_color)
 
@@ -31,12 +36,12 @@ class Box(Widget):
                                            gap=gap,
                                            vertical_gap=vertical_gap,
                                            background_color=background_color,
-                                           width=width,
-                                           height=height,
-                                           parent=parent)
+                                           parent=parent,
+                                           excess_color=excess_color)
 
         # Protected widget specific members
-        self._positionType = PositionTypes.BOX
+        self._position_self = self._properties['parent']._position_children
+        self._position_children = PositionTypes.BOX
         self._dpi = parent.get_dpi()
         self._widgets = []
         self._children = []
@@ -50,18 +55,16 @@ class Box(Widget):
         self._frame.setGeometry(0, 0, get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
 
         # Check if Box's parent is also a box
-        if self._properties['parent']._positionType == PositionTypes.BOX:
+        if self._properties['parent']._position_children == PositionTypes.BOX:
             self._properties['parent']._widget_box_add(self)
 
-    def place(self, x: int = 100, y: int = 100):
-        assert self._positionType == PositionTypes.BOX, TypeError("You cant place a widget whose parent is a box.")
+    def set_position(self, x, y):
+        self._frame.setGeometry(x, y, self.width, self.height)
+        super().set_position(x, y)
 
-        geometry = self._frame.geometry()
-        self._frame.setGeometry(x, y, geometry.width(), geometry.height())
-        self._frame.show()
-
-    def set_position(self, x, y): self._frame.setGeometry(x, y, self.width, self.height)
-    def set_size(self, width, height): self._frame.setGeometry(self.x, self.y, width, height)
+    def set_size(self, width, height):
+        self._frame.setGeometry(self.x, self.y, width, height)
+        super().set_size(width, height)
 
     def show(self): self._frame.show()
     def hide(self): self._frame.hide()
@@ -80,13 +83,13 @@ class Box(Widget):
         main_axis = box(widths, heights, self.width, self.height, wrap=self._properties['wrap'], alignment=self._properties['alignment'], side_alignment=self._properties['side_alignment'], gap=self._properties['gap'], vertical_gap=self._properties['vertical_gap'])
         [child.set_position(main_axis[i][0], main_axis[i][1]) for i, child in enumerate(self._children)]
 
-    def get_dpi(self): return self._properties['parent'].get_dpi()
-
     def set(self, property_name, value):
         self._properties[property_name] = value
 
         if property_name == 'background_color':
             self._frame.setStyleSheet(f"background-color: {get_as_qt(self._properties['background_color'])};")
+        elif property_name == 'excess_color':
+            super().set('excess_color', value)
 
     def get(self, property_name):
         return self._properties[property_name]

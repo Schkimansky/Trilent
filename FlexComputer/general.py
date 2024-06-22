@@ -3,7 +3,7 @@ FUNCTIONS = 9
 
 
 def fallback(positions, heights, vertical_gap, side_alignment='start', flex_box_height=0) -> list[list[int]]:
-    y = 0 if side_alignment in ['start', 'center'] else flex_box_height - vertical_gap
+    y = 0 if side_alignment in ['start', 'center'] else flex_box_height - heights[0]
 
     for i, pos in enumerate(positions):
         positions[i] = [pos[0], y]

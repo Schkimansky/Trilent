@@ -22,7 +22,8 @@ class Window:
 
         super().__init__()
         self._update_timer = None
-        self._positionType = PositionTypes.PLACE
+        self._position_self = PositionTypes.PLACE
+        self._position_children = PositionTypes.PLACE
         self._dpi = self.get_dpi()
         self._update_functions = []
 
@@ -83,24 +84,17 @@ if __name__ == "__main__":
     # Values
     #
 
-    CHILDREN = 1000
-    WIDTH = 20
-    HEIGHT = WIDTH
-    GAP = 1
-    VGAP = GAP
-    WIDGET_COLOR = '16, 16, 16'
-    ALIGNMENT = 'start'
-    SIDE_ALIGNMENT = 'end'
+    CHILDREN = 2
 
     window = Window()
 
-    box = Box(window, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=GAP, vertical_gap=VGAP)
-
-    children: list[Widget] = [Widget(box, WIDTH, HEIGHT, excess_color=WIDGET_COLOR) for _ in range(CHILDREN + 1)]
-
+    box = Box(window, alignment='start', side_alignment='start', gap=1, vertical_gap=1)
     box.place(0, 0)
+
+    children: list[Widget] = [Widget(box, 100, 100, excess_color='skyblue') for _ in range(CHILDREN + 1)]
 
     def update():
         box.set_size(window.width, window.height)
+        box.set('excess_color', '#ff00ff')
 
-    window.run(update, update)
+    window.run(update, update_speed=10)
