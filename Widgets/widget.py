@@ -1,6 +1,6 @@
 from enum import Enum
 from PyQt5.QtWidgets import QFrame
-from Trilent.Utility import get_as_qt, get_in_pixels, PropertyManager
+from Trilent.Utility import get_in_pixels, Reloader, WidgetTypes
 
 
 class PositionTypes(Enum):
@@ -14,62 +14,63 @@ class Widget:
                  parent,
                  width: int | str,
                  height: int | str,
-                 excess_color: str = 'transparent'):
+                 excess_color: str = None):
 
-        # Properties setup
-        self._properties = PropertyManager(parent=parent,
-                                           excess_color=excess_color)
+        # Stylesheet manager
+        self.__reloader = Reloader(WidgetTypes.WIDGET, parent.get_dpi(), parent=parent, width=width, height=height,
+                                   excess_color=excess_color)
 
-        self._position_self = self._properties['parent']._position_children
+        self._position_self = self.__reloader.properties['parent']._position_children
         self._position_children = PositionTypes.NONE
 
-        self._widget_base_frame = QFrame(parent._get_holder())
-        self._widget_base_frame.setGeometry(0, 0, get_in_pixels(width, parent.get_dpi()), get_in_pixels(height, parent.get_dpi()))
-        self._widget_base_frame.setStyleSheet(f"""background-color: {get_as_qt(excess_color)};""")
+        self.__widget = QFrame(parent._get_holder())
+        self.__widget.setGeometry(0, 0, get_in_pixels(width, parent.get_dpi()), get_in_pixels(height, parent.get_dpi()))
+        self.__reloader.reload_start()
+        self.__widget.setStyleSheet(self.__reloader.stylesheet)
 
-        if self._properties['parent']._position_children == PositionTypes.BOX:
+        if self.__reloader.properties['parent']._position_children == PositionTypes.BOX:
             parent._widget_box_add(self)
 
     def place(self, x: int = 100, y: int = 100):
-        assert self._properties['parent']._position_self != PositionTypes.BOX, TypeError("You cant place a widget whose parent is a box.")
+        assert self.__reloader.properties['parent']._position_self != PositionTypes.BOX, \
+            TypeError("You cant place a widget whose parent is a box. Instead, Its position is automatically handled.")
 
-        geometry = self._widget_base_frame.geometry()
-        self._widget_base_frame.setGeometry(x, y, geometry.width(), geometry.height())
-        self._widget_base_frame.show()
+        geometry = self.__widget.geometry()
+        self.__widget.setGeometry(x, y, geometry.width(), geometry.height())
+        self.__widget.show()
 
     def force_place(self, x: int = 100, y: int = 100):
-        geometry = self._widget_base_frame.geometry()
-        self._widget_base_frame.setGeometry(x, y, geometry.width(), geometry.height())
-        self._widget_base_frame.show()
+        geometry = self.__widget.geometry()
+        self.__widget.setGeometry(x, y, geometry.width(), geometry.height())
+        self.__widget.show()
 
     @property
-    def width(self): return self._widget_base_frame.width()
+    def width(self): return self.__widget.width()
     @property
-    def height(self): return self._widget_base_frame.height()
+    def height(self): return self.__widget.height()
     @property
-    def x(self): return self._widget_base_frame.x()
+    def x(self): return self.__widget.x()
     @property
-    def y(self): return self._widget_base_frame.y()
+    def y(self): return self.__widget.y()
 
     def set_position(self, x, y):
-        self._widget_base_frame.setGeometry(x, y, self.width, self.height)
+        self.__widget.setGeometry(x, y, self.width, self.height)
 
     def set_size(self, width, height):
-        self._widget_base_frame.setGeometry(self.x, self.y, width, height)
+        self.__widget.setGeometry(self.x, self.y, width, height)
 
-    def show(self): self._widget_base_frame.show()
-    def hide(self): self._widget_base_frame.hide()
+    def show(self): self.__widget.show()
+    def hide(self): self.__widget.hide()
 
     def _get_holder(self):
-        return self._widget_base_frame
+        return self.__widget
 
-    def get_dpi(self): return self._properties['parent'].get_dpi()
+    def get_dpi(self): return self.__reloader.properties['parent'].get_dpi()
 
     def set(self, property_name, value):
-        self._properties[property_name] = value
+        self.__reloader.reload(property_name, value)
 
-        if property_name == 'excess_color':
-            self._widget_base_frame.setStyleSheet(f"background-color: {get_as_qt(self._properties['excess_color'])};")
+        self.__widget.setStyleSheet(self.__reloader.stylesheet)
 
     def get(self, property_name):
-        return self._properties[property_name]
+        return self.__reloader.properties[property_name]

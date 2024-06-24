@@ -78,23 +78,14 @@ class Window:
 
 
 if __name__ == "__main__":
-    from Trilent.Widgets import Widget, Box
-
-    #
-    # Values
-    #
-
-    CHILDREN = 2
+    from Trilent.Widgets import Widget, Box, Text
 
     window = Window()
 
-    box = Box(window, alignment='start', side_alignment='start', gap=1, vertical_gap=1)
+    box = Box(window, alignment='start', side_alignment='center', gap=5, vertical_gap=5)
     box.place(0, 0)
 
-    children: list[Widget] = [Widget(box, 100, 100, excess_color='skyblue') for _ in range(CHILDREN + 1)]
+    text = Text(box, text='Cool', text_size='20 px')
+    text.place(0, 0)
 
-    def update():
-        box.set_size(window.width, window.height)
-        box.set('excess_color', '#ff00ff')
-
-    window.run(update, update_speed=10)
+    window.run()

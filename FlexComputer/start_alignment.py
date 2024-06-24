@@ -34,7 +34,6 @@ def calculate_start_positions(widths: tuple[int, ...], heights: tuple[int, ...],
             positions.append([x, y])
         column_heights.append(heights[i])
         x += width + gap
-    del i
 
     total_height += max(column_heights) + vertical_gap if column_heights else 0
 

@@ -2,7 +2,7 @@ from typing import Any
 
 
 class PropertyManager:
-    def __init__(self, **kwargs):
+    def __init__(self, kwargs):
         self.properties = {}
 
         for name, value in kwargs.items():
