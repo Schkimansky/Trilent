@@ -1,67 +1,93 @@
 from .color import get_as_qt
 from .unit import get_in_pixels
-from .qss_styles import WidgetTypes, V
-from .property_manager import PropertyManager
+from .orientation import qt_orientation
+from typing import Any, Literal
+
+
+V = '␟'
 
 
 class Reloader:
-    def __init__(self, widget_type: WidgetTypes, dpi: int, **kwargs):
+    def __init__(self, dpi: int,
+                 setup_properties: dict[str, Any],
+                 process_types: dict[str, str],
+                 default_values: dict[str, Any],
+                 property_types: dict[str, Literal['stylesheet', 'special', 'access']],
+                 special_functions: dict[str, Any],
+                 base: str):
         self.dpi = dpi
+        self.property_types = property_types
+        self.all_properties = list(setup_properties.keys())
+        self.base = base
 
-        self.properties = PropertyManager(kwargs)
+        self.process_types = process_types
+        self.special_functions = special_functions
 
-        self.widget_type      = widget_type
-        self.var_types        = self.widget_type.value['var-types']
-        self.i = self.widget_type.value['initials'].copy()
+        self.cp = {}
 
-        self.stylesheet = widget_type.value['stylebase']
+        for p, v in setup_properties.items():
+            self.cp[p] = default_values[p] if v is None else v
 
-        for kw, v in kwargs.items():
-            if kw in self.var_types:
-                # Set any defining parameters set
-                if v is not None:
-                    self.i[kw] = v
+    def process(self, property_name: str, value: str):
+        match self.process_types[property_name]:
+            case 'color':
+                return str(get_as_qt(value))
+            case 'px-value':
+                return str(get_in_pixels(value, self.dpi)) + 'px'
+            case 'raw':
+                return str(value)
+            case 'px-value;int':
+                return get_in_pixels(value, self.dpi)
+            case 'orientation':
+                return qt_orientation(value)
+            case None:
+                return value
 
-        self.changed_initials = self.i
+    def reload(self):
+        base = self.base
 
-        for k, v in self.i.items():
-            self.stylesheet = self.stylesheet.replace(f'{V}{k}{V}', self.qss_value(k, v))
+        for p, v in self.cp.items():
+            if self.property_types[p] == 'special':
+                self.special_functions[p](self.process(p, v))
+            elif self.property_types[p] == 'stylesheet':
+                base = base.replace(f"{V}{p}{V}", self.process(p, v))
 
-    def reload(self, property_name, property_value):
-        self.changed_initials[property_name] = self.qss_value(property_name, property_value)
-        self.properties[property_name] = property_value
+        return base
 
-        # Reload stylesheet to the starting point
-        self.stylesheet = self.widget_type.value['stylebase']
+    def set(self, p, v):
+        if self.process_types[p] == 'special':
+            self.special_functions[p](self.process(p, v))
+        else:
+            self.cp[p] = v
 
-        for k, v in self.changed_initials.items():
-            # Replace variables with their changed values
-            self.stylesheet = self.stylesheet.replace(f'{V}{k}{V}', self.qss_value(k, v))
+    def get(self, p):
+        return self.cp[p]
 
-    def reload_start(self):
-        # Reload stylesheet to the starting point
-        self.stylesheet = self.widget_type.value['stylebase']
 
-        for k, v in self.changed_initials.items():
-            # Replace variables with their changed values
-            self.stylesheet = self.stylesheet.replace(f'{V}{k}{V}', self.qss_value(k, v))
-
-    def qss_value(self, property_name: str, value: str):
-        if self.var_types[property_name] == 'color':
-            return get_as_qt(value)
-        elif self.var_types[property_name] == 'px-value':
-            return str(get_in_pixels(value, self.dpi)) + 'px'
-        elif self.var_types[property_name] == 'raw':
-            return str(value)
-
-    @property
-    def qss_stylesheet(self):
-        return self.stylesheet
+def bench():
+    for i in range(500):
+        reloader.reload()
 
 
 if __name__ == '__main__':
-    reloader = Reloader(WidgetTypes.WIDGET, 92)
+    reloader = Reloader(92,
+                              {'parent': None, 'width': None, 'height': None, 'background_color': None,
+                               'corner_roundness': None, 'alignment': None,
+                               'side_alignment': None, 'wrap': None, 'gap': None,
+                               'vertical_gap': None},
+                              {'parent': None, 'width': 'px-value;int', 'height': 'px-value;int',
+                               'background_color': 'color', 'corner_roundness': 'px-value', 'alignment': None,
+                               'side_alignment': None, 'wrap': None, 'gap': 'px-value;int',
+                               'vertical_gap': 'px-value;int'},
+                              {'parent': None, 'width': '3 inch', 'height': '2 inch',
+                               'background_color': 'cornflowerblue', 'corner_roundness': '10 px', 'alignment': 'start',
+                               'side_alignment': 'start', 'wrap': True, 'gap': '1 px', 'vertical_gap': '1 px'},
+                              {'parent': 'access', 'width': 'special', 'height': 'special',
+                               'background_color': 'stylesheet', 'corner_roundness': 'stylesheet',
+                               'alignment': 'access', 'side_alignment': 'access', 'wrap': 'access', 'gap': 'access',
+                               'vertical_gap': 'access'},
+                              {'width': lambda v: 0, 'height': lambda v: 0},
+                              f"background-color: {V}background_color{V}; border-radius: {V}corner_roundness{V}")
 
-    reloader.reload('excess_color', 'transparent')
-
-    print(reloader.stylesheet)
+    import cProfile
+    cProfile.run('bench()')

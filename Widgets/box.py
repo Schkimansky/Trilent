@@ -1,51 +1,41 @@
-from PyQt5.QtWidgets import QFrame
-from Trilent.Utility import get_in_pixels, Reloader, WidgetTypes
+from PyQt6.QtWidgets import QFrame
+from Trilent.Utility import Reloader, V, Misc
 from Trilent.Widgets import PositionTypes
-from Trilent.Widgets.widget import Widget
 from Trilent.FlexComputer import box
 
 
-class Box(Widget):
+class Box(Misc):
     def __init__(self,
                  parent,
                  # Utility
-                 width: int | str = '3 inch',        # Semi Function
-                 height: int | str = '2 inch',       # Semi Function
+                 width: int | str = None,        # Semi Function
+                 height: int | str = None,       # Semi Function
 
                  # Styling
                  # Color
-                 background_color=None,         # Needs Reload (QML, Slow)
-                 excess_color: str = None,  # Needs Reload (PQML, Slow)
+                 background_color: str = None,              # Needs Reload (QML, Slow)
                  # Fancy
                  corner_roundness: int | str = None,
 
                  # Flex Properties
-                 alignment: str = 'start',
-                 side_alignment: str = 'start',
-                 wrap: bool = True,
-                 gap: int = 5,
-                 vertical_gap: int = 5):
-
-        super().__init__(parent, width, height, excess_color=excess_color)
+                 alignment: str = None,
+                 side_alignment: str = None,
+                 wrap: bool = None,
+                 gap: int = None,
+                 vertical_gap: int = None):
 
         # Reloader setup
-        self._reloader = Reloader(WidgetTypes.BOX, self.get_dpi(),
-
-                                  alignment=alignment,
-                                  side_alignment=side_alignment,
-                                  wrap=wrap,
-                                  gap=gap,
-                                  vertical_gap=vertical_gap,
-                                  background_color=background_color,
-                                  parent=parent,
-                                  width=width,
-                                  height=height,
-                                  corner_roundness=corner_roundness,
-                                  excess_color=excess_color)
+        self._reloader = Reloader(parent.get_dpi(),
+                                  {'parent': parent,   'width': width,          'height': height,         'background_color': background_color, 'corner_roundness': corner_roundness, 'alignment': alignment, 'side_alignment': side_alignment, 'wrap': wrap,     'gap': gap,        'vertical_gap': vertical_gap},
+                                  {'parent': None,     'width': 'px-value;int', 'height': 'px-value;int', 'background_color': 'color',          'corner_roundness': 'px-value',       'alignment': None,      'side_alignment': None,           'wrap': None,     'gap': 'px-value;int', 'vertical_gap': 'px-value;int'},
+                                  {'parent': None,     'width': '3 inch',       'height': '2 inch',       'background_color': 'cornflowerblue', 'corner_roundness': '10 px',         'alignment': 'start',    'side_alignment': 'start',        'wrap': True,     'gap': '1 px',     'vertical_gap': '1 px'},
+                                  {'parent': 'access', 'width': 'special',      'height': 'special',     'background_color': 'stylesheet',     'corner_roundness': 'stylesheet',    'alignment': 'access',   'side_alignment': 'access',       'wrap': 'access', 'gap': 'access',   'vertical_gap': 'access'},
+                                  {'width': lambda v: self._widget.setGeometry(self.x, self.y, v, self.height), 'height': lambda v: self._widget.setGeometry(self.x, self.y, self.width, v)},
+                                  f"background-color: {V}background_color{V}; border-radius: {V}corner_roundness{V}")
 
         # Protected widget specific members
         # noinspection PyProtectedMember
-        self._position_self = self._reloader.properties['parent']._position_children
+        self._position_self = self._reloader.cp['parent']._position_children
         self._position_children = PositionTypes.BOX
         self._dpi = parent.get_dpi()
         self._widgets = []
@@ -53,32 +43,25 @@ class Box(Widget):
 
         # Qt setup
         # noinspection PyProtectedMember
-        self._frame = QFrame(self._reloader.properties['parent']._get_holder())
-        self._reloader.properties['parent'].add_update_function(self._update)
+        self._widget = QFrame(self._reloader.cp['parent']._get_holder())
+        self._reloader.cp['parent'].add_update_function(self._update)
 
         # Setup properties
-        self._reloader.reload_start()
-        self._frame.setStyleSheet(self._reloader.stylesheet)
-
-        self._frame.setGeometry(0, 0, get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
+        self._widget.setStyleSheet(self._reloader.reload())
 
         # Check if Box's parent is also a box
         # noinspection PyProtectedMember
-        if self._reloader.properties['parent']._position_children == PositionTypes.BOX:
+        if self._reloader.cp['parent']._position_children == PositionTypes.BOX:
             # noinspection PyProtectedMember
-            self._reloader.properties['parent']._widget_box_add(self)
+            self._reloader.cp['parent']._widget_box_add(self)
 
-    def set_size(self, width, height):
-        self._frame.setGeometry(self.x, self.y, width, height)
-        super().set_size(width, height)
-        self._reloader.properties.set_property('width', width)
-        self._reloader.properties.set_property('height', height)
+    def show(self): self._widget.show()
+    def hide(self): self._widget.hide()
 
-    def show(self): self._frame.show()
-    def hide(self): self._frame.hide()
+    def set_position(self, x, y): self._widget.setGeometry(x, y, self.width, self.height)
+    def set_size(self, width, height): self._widget.setGeometry(self.x, self.y, width, height)
 
-    def _get_holder(self):
-        return self._frame
+    def _get_holder(self): return self._widget
 
     def _widget_box_add(self, trilent_widget):
         self._children.append(trilent_widget)
@@ -88,20 +71,32 @@ class Box(Widget):
         widths = tuple(child.width for child in self._children)
         heights = tuple(child.height for child in self._children)
 
-        main_axis = box(widths, heights, self.width, self.height, wrap=self._reloader.properties['wrap'],
-                        alignment=self._reloader.properties['alignment'],
-                        side_alignment=self._reloader.properties['side_alignment'],
-                        gap=self._reloader.properties['gap'], vertical_gap=self._reloader.properties['vertical_gap'])
+        main_axis = box(widths, heights, self.width, self.height, wrap=self._reloader.cp['wrap'], alignment=self._reloader.cp['alignment'], side_alignment=self._reloader.cp['side_alignment'], gap=self._reloader.cp['gap'], vertical_gap=self._reloader.cp['vertical_gap'])
         [child.set_position(main_axis[i][0], main_axis[i][1]) for i, child in enumerate(self._children)]
 
-    def set(self, property_name, value):
-        self._reloader.properties[property_name] = value
+    def change(self, **kwargs):
+        for k, v in kwargs.items():
+            self._reloader.set(k, v)
 
-        if property_name == 'excess_color':
-            super().set(property_name, value)
-        else:
-            self._reloader.reload(property_name, value)
-            self._frame.setStyleSheet(self._reloader.stylesheet)
+        self._widget.setStyleSheet(self._reloader.reload())
 
     def get(self, property_name):
-        return self._reloader.properties[property_name]
+        return self._reloader.get(property_name)
+
+    def place(self, x: int = 100, y: int = 100):
+        assert self._reloader.cp['parent']._position_self != PositionTypes.BOX, TypeError("You cant place a widget whose parent is a box. Instead, Its position is automatically handled.")
+
+        geometry = self._widget.geometry()
+        self._widget.setGeometry(x, y, geometry.width(), geometry.height())
+        self._widget.show()
+
+    @property
+    def width(self): return self._widget.width()
+    @property
+    def height(self): return self._widget.height()
+    @property
+    def x(self): return self._widget.x()
+    @property
+    def y(self): return self._widget.y()
+
+    def get_dpi(self): return self._dpi
