@@ -13,7 +13,7 @@ class Box(Misc):
 
                  # Styling
                  # Color
-                 background_color: str = None,              # Needs Reload (QML, Slow)
+                 box_color: str = None,              # Needs Reload (QML, Slow)
                  # Fancy
                  corner_roundness: int | str = None,
 
@@ -21,17 +21,17 @@ class Box(Misc):
                  alignment: str = None,
                  side_alignment: str = None,
                  wrap: bool = None,
-                 gap: int = None,
-                 vertical_gap: int = None):
+                 gap: int | str = None,
+                 vertical_gap: int | str = None):
 
         # Reloader setup
         self._reloader = Reloader(parent.get_dpi(),
-                                  {'parent': parent,   'width': width,          'height': height,         'background_color': background_color, 'corner_roundness': corner_roundness, 'alignment': alignment, 'side_alignment': side_alignment, 'wrap': wrap,     'gap': gap,        'vertical_gap': vertical_gap},
-                                  {'parent': None,     'width': 'px-value;int', 'height': 'px-value;int', 'background_color': 'color',          'corner_roundness': 'px-value',       'alignment': None,      'side_alignment': None,           'wrap': None,     'gap': 'px-value;int', 'vertical_gap': 'px-value;int'},
-                                  {'parent': None,     'width': '3 inch',       'height': '2 inch',       'background_color': 'cornflowerblue', 'corner_roundness': '10 px',         'alignment': 'start',    'side_alignment': 'start',        'wrap': True,     'gap': '1 px',     'vertical_gap': '1 px'},
-                                  {'parent': 'access', 'width': 'special',      'height': 'special',     'background_color': 'stylesheet',     'corner_roundness': 'stylesheet',    'alignment': 'access',   'side_alignment': 'access',       'wrap': 'access', 'gap': 'access',   'vertical_gap': 'access'},
+                                  {'parent': parent,  'width': width,          'height': height,         'box_color': box_color, 'corner_roundness': corner_roundness, 'alignment': alignment, 'side_alignment': side_alignment, 'wrap': wrap,     'gap': gap,            'vertical_gap': vertical_gap},
+                                  {'parent': None,      'width': 'px-value;int', 'height': 'px-value;int', 'box_color': 'color',          'corner_roundness': 'px-value',       'alignment': None,      'side_alignment': None,           'wrap': None,     'gap': 'px-value;int', 'vertical_gap': 'px-value;int'},
+                                  {'parent': None,      'width': '3 inch',       'height': '2 inch',       'box_color': 'transparent',    'corner_roundness': '0.03 inch',      'alignment': 'start',   'side_alignment': 'start',        'wrap': True,     'gap': '1 px',         'vertical_gap': '1 px'},
+                                  {'parent': 'access',  'width': 'special',      'height': 'special',     'box_color': 'stylesheet',     'corner_roundness': 'stylesheet',     'alignment': 'access',   'side_alignment': 'access',       'wrap': 'access', 'gap': 'access',       'vertical_gap': 'access'},
                                   {'width': lambda v: self._widget.setGeometry(self.x, self.y, v, self.height), 'height': lambda v: self._widget.setGeometry(self.x, self.y, self.width, v)},
-                                  f"background-color: {V}background_color{V}; border-radius: {V}corner_roundness{V}")
+                                  f"background-color: {V}box_color{V}; border-radius: {V}corner_roundness{V}")
 
         # Protected widget specific members
         # noinspection PyProtectedMember
@@ -71,32 +71,11 @@ class Box(Misc):
         widths = tuple(child.width for child in self._children)
         heights = tuple(child.height for child in self._children)
 
-        main_axis = box(widths, heights, self.width, self.height, wrap=self._reloader.cp['wrap'], alignment=self._reloader.cp['alignment'], side_alignment=self._reloader.cp['side_alignment'], gap=self._reloader.cp['gap'], vertical_gap=self._reloader.cp['vertical_gap'])
+        flex_args = (self._reloader.process(k, self._reloader.cp[k]) for k in ['alignment', 'side_alignment', 'wrap', 'gap', 'vertical_gap'])
+
+        main_axis = box(widths, heights, self.width, self.height, *flex_args)
         [child.set_position(main_axis[i][0], main_axis[i][1]) for i, child in enumerate(self._children)]
 
-    def change(self, **kwargs):
-        for k, v in kwargs.items():
-            self._reloader.set(k, v)
-
-        self._widget.setStyleSheet(self._reloader.reload())
-
-    def get(self, property_name):
-        return self._reloader.get(property_name)
-
-    def place(self, x: int = 100, y: int = 100):
-        assert self._reloader.cp['parent']._position_self != PositionTypes.BOX, TypeError("You cant place a widget whose parent is a box. Instead, Its position is automatically handled.")
-
-        geometry = self._widget.geometry()
-        self._widget.setGeometry(x, y, geometry.width(), geometry.height())
-        self._widget.show()
-
-    @property
-    def width(self): return self._widget.width()
-    @property
-    def height(self): return self._widget.height()
-    @property
-    def x(self): return self._widget.x()
-    @property
-    def y(self): return self._widget.y()
-
     def get_dpi(self): return self._dpi
+    def add_update_function(self, f):
+        self._reloader.cp['parent'].add_update_function(f)

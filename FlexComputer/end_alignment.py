@@ -39,7 +39,6 @@ def calculate_end_positions(widths: tuple[int, ...], heights: tuple[int, ...], f
         column_widths_map[i] = wraps - 1
 
         x += widths[i] + gap
-    del i
 
     total_height += max(column_heights) + vertical_gap if column_heights else 0
 

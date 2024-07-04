@@ -42,7 +42,6 @@ def calculate_center_positions(widths: tuple[int, ...], heights: tuple[int, ...]
 
         column_heights.append(heights[i])
         x += width + gap
-    del i
 
     # Center the last row
     if row_start_index < len(widths):

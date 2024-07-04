@@ -22,7 +22,7 @@ class Window:
                  x: int | str = '4 inch',
                  y: int | str = '3 inch',
                  # Color
-                 background_color='#272727'):
+                 background_color='#212121'):
 
         super().__init__()
         self._previous_time = None
@@ -92,33 +92,31 @@ class Window:
 
 
 if __name__ == "__main__":
-    from Trilent.Widgets import Box, Widget, Text, Button
-
+    import Trilent.Widgets as tri
 
     class MyApp:
         def __init__(self):
             self.window = Window()
-            self.box = Box(self.window, alignment='start', side_alignment='start', gap=1, vertical_gap=1, corner_roundness=1, background_color='transparent')
-            self.box.place(0, 0)
 
-            self.button = Button(self.box, text='Download')
+            self.slider = tri.Slider(self.window)
+            self.slider.place(100,100)
 
-            self.box.set_size(self.window.width, self.window.height)
-
-            self.time = 0
             self.fpses = []
+            self.time = 0
 
         def update(self, delta):
-            delta += 0.001  # Prevent zero division error
+            delta += 0.0001
+
             self.fpses.append(1 / delta)
             self.time += delta
 
-            if self.time >= 10:
-                self.time = 0
+            if self.time >= 1:
                 print(f'FPS: {sum(self.fpses) / len(self.fpses)}')
                 self.fpses = []
+                self.time = 0
 
-            self.box.set_size(self.window.width, self.window.height)
+            for _ in range(10):
+                self.slider.change()
 
         def run(self):
             self.window.run(self.update)

@@ -37,7 +37,7 @@ class Reloader:
             case 'raw':
                 return str(value)
             case 'px-value;int':
-                return get_in_pixels(value, self.dpi)
+                return int(get_in_pixels(value, self.dpi))
             case 'orientation':
                 return qt_orientation(value)
             case None:
