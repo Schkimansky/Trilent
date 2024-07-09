@@ -93,33 +93,61 @@ class Window:
 
 if __name__ == "__main__":
     import Trilent.Widgets as tri
+    import keyboard as kb
+    from uuid import uuid4
 
     class MyApp:
         def __init__(self):
-            self.window = Window()
-
-            self.slider = tri.Slider(self.window)
-            self.slider.place(100,100)
-
+            self.window = Window('Animation', '10 inch', '6 inch', 340, 200)
             self.fpses = []
             self.time = 0
+            self.squares = []
+            self.acc = [0, 0]
+
+            self.build()
+            self.window.run(self.update)
+
+        def build(self):
+            self.box = tri.Box(self.window, width=self.window.width, height=self.window.height, alignment='center', side_alignment='center')
+
+            tri.CheckBox(self.box, text='Deterministic')
+
+            self.gap_slider = tri.Slider(self.window, command=self.update_gap)
+            self.gap_slider.place(18, self.window.height - 50)
+
+            self.fps_text = tri.Text(self.window, text='FPS: ....', text_size=13)
+            self.fps_text.place(200, self.window.height - 36)
+
+            WIDTH = 10
+            HEIGHT = 10
+            ROUNDING = WIDTH // 13
+            AMOUNT = 10
+            self.SPEED = 1
+
+            COLOR = 'cornflowerblue'
+
+            for _ in range(AMOUNT):
+                self.squares.append(tri.Widget(self.box, WIDTH, HEIGHT, COLOR, ROUNDING))
+
+        def update_gap(self, value):
+            self.box.change(gap=value, vertical_gap=value)
 
         def update(self, delta):
-            delta += 0.0001
+            delta += 0.00001
 
             self.fpses.append(1 / delta)
             self.time += delta
 
             if self.time >= 1:
-                print(f'FPS: {sum(self.fpses) / len(self.fpses)}')
+                fps = sum(self.fpses) / len(self.fpses)
+                self.fps_text.change(text=f"FPS: {fps:.0f}")
                 self.fpses = []
                 self.time = 0
 
-            for _ in range(10):
-                self.slider.change()
+            self.box.set_position(self.box.x + self.acc[0], self.box.y + self.acc[1])
 
-        def run(self):
-            self.window.run(self.update)
+            self.box.set_size(self.window.width, self.window.height)
+            self.gap_slider.set_position(18, self.window.height - 50)
+            self.fps_text.set_position(self.window.width - (9 * len(self.fps_text.get('text'))), self.window.height - 36)
 
-    app = MyApp()
-    app.run()
+    MyApp()

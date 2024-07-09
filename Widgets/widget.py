@@ -7,16 +7,17 @@ class Widget(Misc):
                  parent,
                  width: int | str,
                  height: int | str,
-                 excess_color: str = None):
+                 widget_color: str = None,
+                 corner_roundness: str | int = None):
 
         # Stylesheet manager
         self._reloader = Reloader(parent.get_dpi(),
-                                  {'parent': parent, 'width': width,          'height': height,         'excess_color': excess_color},
-                                  {'parent': None,   'width': 'px-value;int', 'height': 'px-value;int', 'excess_color': 'color'},
-                                  {'parent': None,   'width': '3 inch',       'height': '2 inch',       'excess_color': 'transparent'},
-                                  {'parent': 'access', 'width': 'special',   'height': 'special',      'excess_color': 'stylesheet'},
-                                  {'width': lambda v: self.set_size(v, self.height), 'height': lambda v: self.set_size(self.width, v)},
-                                  f"background-color: {V}excess_color{V};")
+                                  setup_properties  = {'parent': parent,   'width': width,          'corner_roundness': corner_roundness, 'height': height,         'widget_color': widget_color},
+                                  process_types     = {'parent': None,     'width': 'px-value;int', 'corner_roundness': 'px-value',       'height': 'px-value;int', 'widget_color': 'color'},
+                                  default_values    = {'parent': None,     'width': '3 inch',       'corner_roundness': '0.03 inch',      'height': '2 inch',       'widget_color': 'cornflowerblue'},
+                                  property_types    = {'parent': 'access', 'width': 'special',      'corner_roundness': 'stylesheet',     'height': 'special',      'widget_color': 'stylesheet'},
+                                  special_functions = {'width': lambda v: self.set_size(v, self.height), 'height': lambda v: self.set_size(self.width, v)},
+                                  base              = f"background-color: {V}widget_color{V}; border-radius: {V}corner_roundness{V};")
 
         self._position_self = self._reloader.cp['parent']._position_children
         self._position_children = PositionTypes.NONE

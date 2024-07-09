@@ -50,7 +50,7 @@ def calculate_center_positions(widths: tuple[int, ...], heights: tuple[int, ...]
         for j in range(row_start_index, len(widths)):
             positions[j][0] += shift
 
-    total_height += max(column_heights) + vertical_gap if column_heights else 0
+    total_height += max(column_heights) if column_heights else 0
 
     # Fallback is used to fix a bug, You can ignore this.
     if wraps >= len(widths):

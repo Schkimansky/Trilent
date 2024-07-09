@@ -23,15 +23,15 @@ class Slider(Misc):
         # Reloader setup
         base = \
 f"""QSlider::handle {{
-    background: {V}button_color{V};
+    background-color: {V}button_color{V};
     border-radius: 3px;
 }}
 QSlider::sub-page {{
-    background: {V}filled_color{V};
+    background-color: {V}filled_color{V};
     border-radius: 3px;
 }}
 QSlider::add-page {{
-    background: {V}unfilled_color{V};
+    background-color: {V}unfilled_color{V};
     border-radius: 3px;
 }}
 """

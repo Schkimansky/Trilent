@@ -9,7 +9,7 @@ class PositionTypes(Enum):
 
 class Misc:
     def place(self, x: int = 100, y: int = 100):
-        assert self._reloader.cp['parent']._position_self != PositionTypes.BOX, \
+        assert self._reloader.cp['parent']._position_children != PositionTypes.BOX, \
             TypeError("You cant place a widget whose parent is a box. Instead, Its position is automatically handled.")
 
         geometry = self._widget.geometry()
