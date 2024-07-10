@@ -40,6 +40,8 @@ class Reloader:
                 return int(get_in_pixels(value, self.dpi))
             case 'orientation':
                 return qt_orientation(value)
+            case 'super raw':
+                return value
             case None:
                 return value
 

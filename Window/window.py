@@ -111,6 +111,7 @@ if __name__ == "__main__":
             self.box = tri.Box(self.window, width=self.window.width, height=self.window.height, alignment='center', side_alignment='center')
 
             tri.CheckBox(self.box, text='Deterministic')
+            tri.Switch(self.box, command=lambda v: print(v))
 
             self.gap_slider = tri.Slider(self.window, command=self.update_gap)
             self.gap_slider.place(18, self.window.height - 50)
@@ -131,6 +132,7 @@ if __name__ == "__main__":
 
         def update_gap(self, value):
             self.box.change(gap=value, vertical_gap=value)
+            print(value)
 
         def update(self, delta):
             delta += 0.00001

@@ -79,7 +79,8 @@ class Box(Misc):
         for k, v in kwargs.items():
             self._reloader.set(k, v)
 
-        self._widget.setStyleSheet(self._reloader.reload())
+        if any(self._reloader.property_types[k] == 'stylesheet' for k, v in kwargs.items()):
+            self._widget.setStyleSheet(self._reloader.reload())
 
     def _update(self):
         widths = tuple(child.width for child in self._children)
