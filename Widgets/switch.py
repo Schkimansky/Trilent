@@ -1,6 +1,6 @@
 from Trilent.Widgets import Slider
 from typing import Literal
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtWidgets import QSlider
 
 
@@ -27,9 +27,15 @@ class Switch(Slider):
                  # Kick starters
                  starting_state         : int = 1):
 
+        if handle_corner_roundness == None:
+            handle_corner_roundness = 15 // 2
+
         super().__init__(parent, width, height, command, 1, modes, 1, unfilled_color, button_color, filled_color, orientation, corner_roundness=corner_roundness, handle_corner_roundness=handle_corner_roundness)
 
         self._state = starting_state
+        self._modes = modes
+
+        self._moveHandled = False
 
         # Make it behave like a toggler instead of a picker
         self._widget.mousePressEvent = self.mousePressEvent
@@ -43,16 +49,42 @@ class Switch(Slider):
             return
         super(QSlider, self._widget).mousePressEvent(event)
 
-    def mouseMoveEvent(self, event):
-        # Ignore mouse move event to prevent the handle from being moved
-        event.ignore()
+    def find_closest_number(self, array, target):
+        closest_num = array[0]
+        min_diff = abs(array[0] - target)
+
+        for num in array:
+            diff = abs(num - target)
+            if diff < min_diff:
+                min_diff = diff
+                closest_num = num
+
+        return closest_num
+
+    def mouseMoveEvent(self, event: QEvent):
+        x = event.pos().x()
+        width = self._widget.width()
+        new_value = (x / width) * (self._widget.maximum() - self._widget.minimum()) + self._widget.minimum()
+
+        width_mappings = [i for i in range(((self._widget.maximum() - self._widget.minimum()) + self._widget.minimum()) + 1)]
+
+        closest_value = self.find_closest_number(width_mappings, new_value)
+
+        self._widget.setValue(int(closest_value))
+
+        self._moveHandled = True
+
+        event.accept()
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            # Increment the state and wrap around if it exceeds the modes
-            self._state = self._widget.value() + 1
-            if self._state > self._widget.maximum():
-                self._state = self._widget.minimum()
-            self._widget.setValue(self._state)
+        if not self._moveHandled:
+            if event.button() == Qt.MouseButton.LeftButton:
+                # Increment the state and wrap around if it exceeds the modes
+                self._state = self._widget.value() + 1
+                if self._state > self._widget.maximum():
+                    self._state = self._widget.minimum()
+                self._widget.setValue(self._state)
 
-        super(QSlider, self._widget).mouseReleaseEvent(event)
+            super(QSlider, self._widget).mouseReleaseEvent(event)
+        else:
+            self._moveHandled = False
