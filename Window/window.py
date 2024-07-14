@@ -1,11 +1,9 @@
+import cProfile
+
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtCore import QTimer, QTime
 from PyQt6.QtGui import QPalette, QColor
-
-from Trilent.Utility.color import get_as_qt
 from Trilent.Utility.unit import get_in_pixels
-from Trilent.Widgets.widget import PositionTypes
-
 from functools import lru_cache
 
 
@@ -60,9 +58,9 @@ class Window:
                 self._update_functions.append(update)
         if self._update_functions:
             self._update_timer = QTimer(self._window)
-            
+
             def update_func():
-                for func in self._update_functions: 
+                for func in self._update_functions:
                     func()
 
             self._update_timer.timeout.connect(update_func)
@@ -78,10 +76,12 @@ class Window:
     @lru_cache
     def get_dpi(self): return int(self._app.primaryScreen().logicalDotsPerInchX())
 
-    def get_size(self):
-        size = self._window.size()
-        return self.width, self.height
+    def get_size(self): return self.width, self.height
 
+    @property
+    def x(self): return self._window.x()
+    @property
+    def y(self): return self._window.y()
     @property
     def width(self): return self._window.size().width()
     @property
@@ -92,5 +92,10 @@ class Window:
 
 
 if __name__ == "__main__":
+    from Trilent.Widgets import *
+
     window = Window()
+
+    Button(window, text_color='white')
+
     window.run()

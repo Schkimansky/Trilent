@@ -27,7 +27,7 @@ class Switch(Slider):
                  # Kick starters
                  starting_state         : int = 1):
 
-        if handle_corner_roundness == None:
+        if handle_corner_roundness is None:
             handle_corner_roundness = 15 // 2
 
         super().__init__(parent, width, height, command, 1, modes, 1, unfilled_color, button_color, filled_color, orientation, corner_roundness=corner_roundness, handle_corner_roundness=handle_corner_roundness)

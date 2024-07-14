@@ -44,3 +44,6 @@ class Misc:
     def x(self): return self._widget.x()
     @property
     def y(self): return self._widget.y()
+
+    def is_hidden(self): return self._widget.isHidden()
+    def is_shown(self): return not self._widget.isHidden()
