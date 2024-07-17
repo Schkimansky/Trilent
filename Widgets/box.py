@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QFrame
-from Trilent.Utility import Reloader, V, Misc
-from Trilent.Widgets import PositionTypes
-from Trilent.FlexComputer import box
+from trilent.Utility import Reloader, V, Misc
+from trilent.Widgets import PositionTypes
+from trilent.FlexComputer import box
 
 
 class Box(Misc):

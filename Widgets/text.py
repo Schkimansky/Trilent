@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QLabel
-from Trilent.Utility import Reloader, qt_orientation, V, Misc
-from Trilent.Widgets import PositionTypes
+from trilent.Utility import Reloader, qt_orientation, V, Misc
+from trilent.Widgets import PositionTypes
 
 
 class Text(Misc):
@@ -13,7 +13,7 @@ class Text(Misc):
                  font       : str       = None,
                  width      : int | str = None,
                  height     : int | str = None,
-                 auto_size  : bool      = None,  # Controls if you dont wanna enter width and height
+                 auto_size  : bool      = None,  # Controls if you don't want to enter width and height
 
                  # Stylesheet
                  text_color      : str = None,
@@ -31,7 +31,7 @@ class Text(Misc):
         self._reloader = Reloader(parent.get_dpi(),
                                   setup_properties  = {'background_color': background_color, 'text_color': text_color,   'auto_size': auto_size,   'text_size': text_size,     'font': font,         'orientation': orientation,   'text': text,            'parent': parent,   'width': width,          'height': height,},
                                   process_types     = {'background_color': 'color',          'text_color': 'color',      'auto_size': 'super raw', 'text_size': 'px-value',    'font': 'raw',        'orientation': 'orientation', 'text': 'raw',           'parent': None,     'width': 'px-value;int', 'height': 'px-value;int'},
-                                  default_values    = {'background_color': 'transparent',    'text_color': 'white',      'auto_size': False,        'text_size': '0.3 inch',    'font': 'Arial',      'orientation': 'top left',    'text': 'Trilent Text.', 'parent': None,     'width': '5 inch',       'height': '2 inch'},
+                                  default_values    = {'background_color': 'transparent',    'text_color': 'white',      'auto_size': False,       'text_size': '0.3 inch',    'font': 'Arial',      'orientation': 'top left',    'text': 'Trilent Text.', 'parent': None,     'width': '5 inch',       'height': '0.5 inch'},
                                   property_types    = {'background_color': 'stylesheet',     'text_color': 'stylesheet', 'auto_size': 'access',    'text_size': 'stylesheet',  'font': 'stylesheet', 'orientation': 'special',     'text': 'special',       'parent': 'access', 'width': 'special',      'height': 'special'},
                                   special_functions = {'orientation':       orient_func,     'text': text_func,          'width' : lambda v: self._widget.setGeometry(self.x, self.y, v, self.height), 'height': lambda v: self._widget.setGeometry(self.x, self.y, self.width, v)},
                                   base              = f"background-color: {V}background_color{V}; font-family: {V}font{V}; font-size: {V}text_size{V}; color: {V}text_color{V}")

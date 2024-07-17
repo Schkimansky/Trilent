@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QPushButton
-from Trilent.Utility import Reloader, V, Misc
-from Trilent.Widgets import PositionTypes
+from trilent.Utility import Reloader, V, Misc
+from trilent.Widgets import PositionTypes
 
 
 class Button(Misc):

@@ -57,7 +57,7 @@ def hexa_to_rgba(hexa):
     g = int(hexa[3:5], 16)
     b = int(hexa[5:7], 16)
     a = int(hexa[7:9], 16)
-    return f'{r}, {g}, {b}, {a}'
+    return f'rgba({r}, {g}, {b}, {a})'
 
 
 def get_as_qt(value):

@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QLineEdit
-from Trilent.Utility import Reloader, V, Misc
-from Trilent.Widgets import PositionTypes
+from trilent.Utility import Reloader, V, Misc
+from trilent.Widgets import PositionTypes
+
 
 class Entry(Misc):
     def __init__(self,

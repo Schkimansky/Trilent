@@ -13,22 +13,3 @@ def box(widths: tuple[int, ...], heights: tuple[int, ...], box_width: int = 500,
         return calculate_center_positions(*arguments)
     elif alignment == 'end':
         return calculate_end_positions(*arguments)
-
-
-def benchmark():
-    box(w, h, alignment=ALIGNMENT, side_alignment=SIDE_ALIGNMENT, gap=5)
-
-
-if __name__ == '__main__':
-    import cProfile
-
-    num = 1_000_000
-    w = (5, ) * num
-    h = (5, ) * num
-    ALIGNMENT = 'start'
-    SIDE_ALIGNMENT = 'start'
-
-    print('start')
-    # cProfile.run('benchmark()')
-    benchmark()
-    print('end')

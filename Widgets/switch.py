@@ -1,4 +1,4 @@
-from Trilent.Widgets import Slider
+from trilent.Widgets import Slider
 from typing import Literal
 from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtWidgets import QSlider
@@ -49,7 +49,8 @@ class Switch(Slider):
             return
         super(QSlider, self._widget).mousePressEvent(event)
 
-    def find_closest_number(self, array, target):
+    @staticmethod
+    def find_closest_number(array, target):
         closest_num = array[0]
         min_diff = abs(array[0] - target)
 

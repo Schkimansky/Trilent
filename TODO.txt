@@ -1,0 +1,20 @@
+### Finished:
+
+# Animations
+
+Animations | linear animations                              - Finished
+Animations | eased animations                               - Finished
+Animations | for color types                                - Finished
+Animations | animation breaking                             - Finished
+Animations | animation stopping                             - Finished
+Animations | better easing functions                        - Finished
+Animations | for px-value types                             - Finished
+Animations | for px-value;int types                         - Finished
+Animations | error resilience                               - Finished
+Animations | .animate method implementation for Misc/Widget - Finished
+Animations | .animate method implementation for Misc/Widget - Finished
+Animations | for x, y values                                - Finished
+
+### Todo:
+
+Effects! - Todo

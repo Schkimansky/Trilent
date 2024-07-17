@@ -15,6 +15,13 @@ class Reloader:
                  property_types: dict[str, Literal['stylesheet', 'special', 'access']],
                  special_functions: dict[str, Any],
                  base: str):
+        self.initial_parameters = {'setup_properties': setup_properties,
+                                   'process_types': process_types,
+                                   'default_values': default_values,
+                                   'property_types': property_types,
+                                   'special_functions': special_functions,
+                                   'base': base}
+
         self.dpi = dpi
         self.property_types = property_types
         self.all_properties = list(setup_properties.keys())
@@ -30,6 +37,23 @@ class Reloader:
 
     def process(self, property_name: str, value: str):
         match self.process_types[property_name]:
+            case 'color':
+                return str(get_as_qt(value))
+            case 'px-value':
+                return str(get_in_pixels(value, self.dpi)) + 'px'
+            case 'raw':
+                return str(value)
+            case 'px-value;int':
+                return int(get_in_pixels(value, self.dpi))
+            case 'orientation':
+                return qt_orientation(value)
+            case 'super raw':
+                return value
+            case None:
+                return value
+
+    def alternate_process(self, property_name: str, value: str):
+        match property_name:
             case 'color':
                 return str(get_as_qt(value))
             case 'px-value':

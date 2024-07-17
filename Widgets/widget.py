@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QFrame
-from Trilent.Utility import Reloader, V, Misc, PositionTypes
+from trilent.Utility import Reloader, V, Misc, PositionTypes
 
 
 class Widget(Misc):

@@ -1,8 +1,8 @@
-from PyQt6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsEllipseItem, QGraphicsItem, QGraphicsRectItem
+from PyQt6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from PyQt6.QtGui import QPen, QColor, QBrush, QPainter
 from PyQt6.QtCore import Qt, QRect
-from Trilent.Utility import Reloader, V, Misc
-from Trilent.Widgets import PositionTypes
+from trilent.Utility import Reloader, V, Misc
+from trilent.Widgets import PositionTypes
 
 
 class Shape:
