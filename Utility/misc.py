@@ -1,7 +1,6 @@
 from enum import Enum
 from trilent.Animations import Animation
 
-
 events_dictionary: dict[str, str] = {'wheel': 'wheelEvent',
                                      'drag': 'mouseMoveEvent',
                                      'hover': 'enterEvent',
@@ -33,6 +32,9 @@ class Misc:
         geometry = self._widget.geometry()
         self._widget.setGeometry(x, y, geometry.width(), geometry.height())
         self._widget.show()
+
+    def set_tooltip(self, tooltip): self._widget.setToolTip(tooltip)
+    def get_tooltip(self): self._widget.toolTip()
 
     def set_position(self, x, y): self._widget.setGeometry(x, y, self.width, self.height)
     def set_size(self, width, height): self._widget.setGeometry(self.x, self.y, width, height)
@@ -84,3 +86,6 @@ class Misc:
     def animate(self, time=0.3, curve=None, animation_finished=lambda: ..., **kwargs):
         for i, (k, v) in enumerate(kwargs.items()):
             Animation(self, k, v, time=time, curve=curve, animation_finished=animation_finished if i == 0 else lambda: ...).start()
+
+    def enable(self): self._widget.setDisabled(False)
+    def disable(self): self._widget.setDisabled(True)

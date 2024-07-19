@@ -44,9 +44,7 @@ class Canvas(Misc):
                  # Stylesheet
                  background_color: str = None,
                  border_color    : str = None,
-                 border_width    : str | int = None,
-
-                 anti_aliasing   : bool = False):
+                 border_width    : str | int = None):
 
         # Reloader setup
         base = f"""QGraphicsView {{ background-color: {V}background_color{V}; border: {V}border_width{V} solid {V}border_color{V}; }}"""
@@ -67,9 +65,6 @@ class Canvas(Misc):
         # Qt setup
         self._scene = QGraphicsScene()
         self._widget = QGraphicsView(self._scene, self._reloader.cp['parent']._get_holder())
-
-        # Disable anti-aliasing
-        self._widget.setRenderHint(QPainter.RenderHint.Antialiasing, anti_aliasing)
 
         # Setup properties
         self._widget.setFixedSize(width, height)

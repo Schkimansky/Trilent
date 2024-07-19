@@ -60,3 +60,8 @@ QLineEdit:focus {{ background-color: {V}clicked_color{V}; }}"""
         if self._reloader.cp['parent']._position_children == PositionTypes.BOX:
             # noinspection PyProtectedMember
             self._reloader.cp['parent']._widget_box_add(self)
+
+    def get(self, property_name):
+        if property_name == 'text':
+            return self._widget.text()
+        return self._reloader.cp[property_name]

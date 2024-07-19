@@ -1,3 +1,4 @@
+from typing import Literal
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtCore import QTimer, QTime
 from trilent.Utility.unit import get_in_pixels
@@ -5,6 +6,7 @@ from trilent.Utility.color import get_as_qt
 from trilent.Utility.misc import Misc
 from functools import lru_cache
 from trilent.Widgets.widget import PositionTypes
+from PyQt6.QtCore import Qt
 
 
 def has_parameter(func, param_names):
@@ -60,6 +62,32 @@ class Window(Misc):
 
         self._widget.show()
         self._app.exec()
+
+    def attribute(self, name: Literal['opacity', 'transparent', 'show at taskbar'], value, warn=True):
+        match name:
+            case 'transparent':
+                if value:
+                    self._widget.setWindowFlags(self._widget.windowFlags() | Qt.WindowType.FramelessWindowHint)
+                    self._widget.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+                else:
+                    self._widget.setWindowFlags(self._widget.windowFlags() | Qt.WindowType.Window)
+                    self._widget.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
+                    self._widget.show()
+            case 'opacity':
+                self._log('Opacity may glitch slightly in Windows.', warn)
+                self._widget.setWindowOpacity(value / 100)
+            case 'show at taskbar':
+                if value:
+                    self._widget.setWindowFlags(self._widget.windowFlags() | Qt.WindowType.Window)
+                else:
+                    self._widget.setWindowFlags(self._widget.windowFlags() | Qt.WindowType.Tool)
+                self._log('"Show at taskbar" may remove the starting animation of the window', warn)
+
+    @staticmethod
+    def _log(string, warn):
+        if warn:
+            print(string)
+            print('To disable this warning, Set warn=False')
 
     # Utility Methods
     def close(self): self._app.quit()
