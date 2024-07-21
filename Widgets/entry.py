@@ -53,7 +53,7 @@ QLineEdit:focus {{ background-color: {V}clicked_color{V}; }}"""
 
         # Setup properties
         self._widget.setStyleSheet(self._reloader.reload())
-        self._widget.editingFinished.connect(self._reloader.cp['command'])
+        self._widget.editingFinished.connect(lambda: self._reloader.cp['command']())
 
         # Check if Box's parent is also a box
         # noinspection PyProtectedMember

@@ -50,7 +50,7 @@ QPushButton:pressed {{ background-color: {V}clicked_color{V}; }}"""
 
         # Setup properties
         self._widget.setStyleSheet(self._reloader.reload())
-        self._widget.clicked.connect(self._reloader.cp['command'])
+        self._widget.clicked.connect(lambda: self._reloader.cp['command']())
 
         # Check if Box's parent is also a box
         # noinspection PyProtectedMember

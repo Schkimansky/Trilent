@@ -1,12 +1,13 @@
 from typing import Literal
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtCore import QTimer, QTime
+from PyQt6.QtCore import QTimer, QTime, Qt
+from PyQt6.QtGui import QIcon
 from trilent.Utility.unit import get_in_pixels
 from trilent.Utility.color import get_as_qt
 from trilent.Utility.misc import Misc
 from functools import lru_cache
 from trilent.Widgets.widget import PositionTypes
-from PyQt6.QtCore import Qt
+import os
 
 
 def has_parameter(func, param_names):
@@ -25,7 +26,10 @@ class Window(Misc):
                  x: int | str = '4 inch',
                  y: int | str = '3 inch',
                  # Color
-                 background_color='#212121'):
+                 background_color='#212121',
+
+                 icon=None,
+                 default_icon='empty.svg'):
 
         self._update_timer = None
         self._previous_time = None
@@ -38,6 +42,7 @@ class Window(Misc):
         self._widget.setStyleSheet(f'background-color: {get_as_qt(background_color)};')
         self._widget.setWindowTitle(title)
         self._widget.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi), get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
+        self.icon(default_icon or icon)
 
         self._setup_delta_setter()
 
@@ -109,6 +114,16 @@ class Window(Misc):
     def normal(self): self._widget.show()
     def minimize(self): self._widget.showMinimized()
     def maximize(self): self._widget.showMaximized()
+
+    def icon(self, path):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(current_dir, path)
+
+        icon = QIcon(icon_path)
+        self._widget.setWindowIcon(icon)
+
+    def title(self, title): self._widget.setWindowTitle(title)
+    def background_color(self, background_color): self._widget.setStyleSheet(f'background-color: {background_color};')
 
     def _get_holder(self): return self._widget
 

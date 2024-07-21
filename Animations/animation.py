@@ -1,5 +1,5 @@
 import math
-from trilent.Utility.gradient_list import gradient_list
+from trilent.Utility.gradient_list import color_gradient, gradient_gradient, convert_rgba_to_hex, convert_hex_to_rgba
 
 
 def better_range(start_value, end_value):
@@ -23,11 +23,20 @@ class Animation:
         self._window = widget.get_top_parent()
 
         # Defining Values
-        if name in ['x','y']:
+        if name in ['x', 'y']:
             self._start_value = getattr(widget, name)
             self._end_value = widget._reloader.alternate_process('px-value;int', end_value)
             self._type = 'px-value;int'
             self._raw_start_value = getattr(widget, name)
+            self._raw_end_value = end_value
+        elif end_value.__contains__(' -> '):
+            self._start_value = widget.get(name)
+            if not self._start_value.__contains__(' -> '):
+                self._start_value = f"{self._start_value} -> {self._start_value}"
+
+            self._end_value = end_value
+            self._type = 'gradient color'
+            self._raw_start_value = self._start_value
             self._raw_end_value = end_value
         else:
             self._start_value = self.widget._reloader.process(self.name, widget._reloader.cp[name])
@@ -123,8 +132,11 @@ class Animation:
                 listings = better_range(self._start_value, self._end_value)
             case 'px-value':
                 listings = better_range(self.break_px(self._start_value), self.break_px(self._end_value))
+            case 'gradient color':
+                listings = gradient_gradient(self._start_value, self._end_value, 255, 30,
+                                             self.widget._reloader.alternate_process)
             case 'color':
-                listings = gradient_list(self._start_value, self._end_value, steps=255)
+                listings = color_gradient(self._start_value, self._end_value, 255)
             case _:
                 raise NotImplementedError(f'Animations for "{self.name}" isn\'t supported yet. Type: {self._type}')
         return listings
@@ -254,3 +266,7 @@ class Animation:
     @staticmethod
     def ease_in_out_circle(t):
         return (1 - math.sqrt(1 - 4 * t * t)) / 2 if t < 0.5 else (math.sqrt(1 - (2 * t - 2) * (2 * t - 2)) + 1) / 2
+
+    @staticmethod
+    def linear(t):
+        return t

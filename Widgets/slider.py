@@ -31,8 +31,9 @@ class Slider(Misc):
                  starting_value: int = 0):
 
         # Reloader setup
-        base = \
-f"""QSlider::handle {{
+        base = f"""QSlider {{ background-color : rgba(0, 0, 0, 0); }}
+
+QSlider::handle {{
     background-color: {V}button_color{V};
     border-radius: {V}handle_corner_roundness{V};
 }}
@@ -73,7 +74,7 @@ QSlider::add-page {{
         # Setup properties
         self._widget.setValue(starting_value)
         self._widget.setStyleSheet(self._reloader.reload())
-        self._widget.valueChanged.connect(slider_command)
+        self._widget.valueChanged.connect(lambda: self._reloader.cp['slider_command']())
 
         # Check if Box's parent is also a box
         # noinspection PyProtectedMember

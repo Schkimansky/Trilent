@@ -31,6 +31,7 @@ QCheckBox {{
     color: {V}text_color{V};
     font-size: {V}text_size{V};
     font-family: {V}font{V};
+    background-color: rgba(0,0,0,0);
 }}
 QCheckBox::indicator {{
     border-radius: {V}corner_roundness{V};
@@ -66,7 +67,7 @@ QCheckBox::indicator {{
 
         # Setup properties
         self._widget.setStyleSheet(self._reloader.reload())
-        self._widget.stateChanged.connect(self._reloader.cp['command'])
+        self._widget.stateChanged.connect(lambda: self._reloader.cp['command']())
 
         # Check if Box's parent is also a box
         # noinspection PyProtectedMember
