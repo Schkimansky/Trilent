@@ -27,6 +27,26 @@ def wave_text_gradient(str1, str2):
 
 
 def pulse_text_gradient(str1, str2):
+    center_index = len(str1) // 2
+
+    if len(str1) > len(str2):
+        while not len(str1) == len(str2):
+            str2 += " "
+
+    elif len(str1) < len(str2):
+        while not len(str1) == len(str2):
+            str1 += " "
+
+    transitions = []
+
+    current = list(str1)
+    goal = list(str2)
+
+    for transition in range(len(str1) - (center_index)):
+        current[center_index - transition] = goal[center_index - transition]
+        current[center_index + transition] = goal[center_index + transition]
+
+        transitions.append(' '.join(''.join(current).split()))
 
     return transitions
 
