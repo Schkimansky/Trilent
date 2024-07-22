@@ -42,7 +42,7 @@ def pulse_text_gradient(str1, str2):
     current = list(str1)
     goal = list(str2)
 
-    for transition in range(len(str1) - (center_index)):
+    for transition in range(len(str1) - center_index):
         current[center_index - transition] = goal[center_index - transition]
         current[center_index + transition] = goal[center_index + transition]
 
@@ -62,5 +62,4 @@ def text_gradient(text1, text2, steps, mode):
 
 
 if __name__ == '__main__':
-    print(text_gradient('Thats nice', 'wow', 3, ''))
-
+    print(text_gradient('Test.', 'Secondary text.', 3, 'pulse'))

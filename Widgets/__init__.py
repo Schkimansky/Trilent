@@ -3,7 +3,8 @@ __all__ = ['PositionTypes', 'Box',
            'Button', 'Entry',
            'Slider', 'CheckBox',
            'Switch', 'Canvas',
-           'Image', 'Spacer']
+           'Image', 'Spacer',
+           'Frame']
 
 from .widget import PositionTypes, Widget
 from .box import Box
@@ -16,5 +17,6 @@ from .switch import Switch
 from .canvas import Canvas
 from .image import Image
 from .spacer import Spacer
+from .frame import Frame
 
-_ = PositionTypes, Box, Widget, Text, Button, Entry, Slider, CheckBox, Switch, Canvas, Image, Spacer
+_ = PositionTypes, Box, Widget, Text, Button, Entry, Slider, CheckBox, Switch, Canvas, Image, Spacer, Frame

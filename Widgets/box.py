@@ -63,24 +63,11 @@ class Box(Misc):
 
         self._update()
 
-    def show(self): self._widget.show()
-    def hide(self): self._widget.hide()
-
-    def set_position(self, x, y): self._widget.setGeometry(x, y, self.width, self.height)
-    def set_size(self, width, height): self._widget.setGeometry(self.x, self.y, width, height)
-
     def _get_holder(self): return self._widget
 
     def _widget_box_add(self, trilent_widget):
         self._children.append(trilent_widget)
         trilent_widget.force_place(0, 0)
-
-    def change(self, **kwargs):
-        for k, v in kwargs.items():
-            self._reloader.set(k, v)
-
-        if any(self._reloader.property_types[k] == 'stylesheet' for k, v in kwargs.items()):
-            self._widget.setStyleSheet(self._reloader.reload())
 
     def _update(self):
         widths = tuple(child.width for child in self._children)

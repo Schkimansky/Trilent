@@ -85,3 +85,6 @@ class Misc:
 
     def enable(self): self._widget.setDisabled(False)
     def disable(self): self._widget.setDisabled(True)
+
+    def add_update_function(self, f):
+        self.get_top_parent().add_update_function(f)
