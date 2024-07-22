@@ -1,12 +1,33 @@
-# Unimplemented:
 
 def wave_text_gradient(str1, str2):
-    transitions = []
+    len1, len2 = len(str1), len(str2)
+    max_len = max(len1, len2)
+
+    if len1 < max_len:
+        str1 += ' ' * (max_len - len1)
+    elif len2 < max_len:
+        str2 += ' ' * (max_len - len2)
+
+    transitions = [str1]
+
+    list1 = list(str1)
+    list2 = list(str2)
+
+    for i in range(max_len):
+        if list1[i] != list2[i]:
+            list1[i] = list2[i]
+            transitions.append(' '.join(''.join(list1).split()))
+
+    for i in range(len(transitions)):
+        if transitions[i] == ' ':
+            transitions.pop(i)
+        transitions[i] = transitions[i].rstrip()
+
     return transitions
 
 
 def pulse_text_gradient(str1, str2):
-    transitions = []
+
     return transitions
 
 
