@@ -1,6 +1,7 @@
 from functools import lru_cache
 import multiprocessing
 from typing import List
+from .color import get_as_qt
 
 
 def convert_hex_to_rgba(hex_color: str) -> list[int]:
@@ -100,9 +101,9 @@ def blend_gradients(grad1: List[str], grad2: List[str], steps: int) -> List[str]
     return blended_gradients
 
 
-def gradient_gradient(gradient1: str, gradient2: str, steps: int, color_steps: int, process_function) -> list[str]:
-    gradient1_colors = [process_function('color', color) for color in gradient1.split(' -> ')]
-    gradient2_colors = [process_function('color', color) for color in gradient2.split(' -> ')]
+def gradient_gradient(gradient1: str, gradient2: str, steps: int, color_steps: int) -> list[str]:
+    gradient1_colors = [get_as_qt(color) for color in gradient1.split(' -> ')]
+    gradient2_colors = [get_as_qt(color) for color in gradient2.split(' -> ')]
 
     grad1 = multi_color_gradient(gradient1_colors, color_steps)
     grad2 = multi_color_gradient(gradient2_colors, color_steps)

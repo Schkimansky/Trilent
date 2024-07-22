@@ -74,7 +74,7 @@ QSlider::add-page {{
         # Setup properties
         self._widget.setValue(starting_value)
         self._widget.setStyleSheet(self._reloader.reload())
-        self._widget.valueChanged.connect(lambda: self._reloader.cp['slider_command']())
+        self._widget.valueChanged.connect(slider_command)
 
         # Check if Box's parent is also a box
         # noinspection PyProtectedMember

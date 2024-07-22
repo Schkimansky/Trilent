@@ -79,9 +79,9 @@ class Misc:
 
     def connect(self, name, func): setattr(self._widget, events_dictionary[name], lambda e: func())
 
-    def animate(self, time=0.3, curve=None, animation_finished=lambda: ..., **kwargs):
+    def animate(self, time=0.3, curve='ease in out', animation_finished=lambda: ..., mode='', **kwargs):
         for i, (k, v) in enumerate(kwargs.items()):
-            Animation(self, k, v, time=time, curve=curve, animation_finished=animation_finished if i == 0 else lambda: ...).start()
+            Animation(self, k, v, time=time, curve=curve, mode=mode, animation_finished=animation_finished if i == 0 else lambda: ...).start()
 
     def enable(self): self._widget.setDisabled(False)
     def disable(self): self._widget.setDisabled(True)
