@@ -29,7 +29,7 @@ class Animation:
             self._type = 'px-value;int'
             self._raw_start_value = getattr(widget, name)
             self._raw_end_value = end_value
-        elif end_value.__contains__(' -> '):
+        elif isinstance(end_value, str) and end_value.__contains__(' -> '):
             self._start_value = widget.get(name)
             if not self._start_value.__contains__(' -> '):
                 self._start_value = f"{self._start_value} -> {self._start_value}"
@@ -47,7 +47,6 @@ class Animation:
 
         self._current_value = self._start_value
 
-        # Animation variables
         self.elapsed_time = 0
 
         if isinstance(curve, str):
@@ -143,7 +142,7 @@ class Animation:
 
     @staticmethod
     def break_px(string: str):
-        return int(string.removesuffix('px'))
+        return int(float(string.removesuffix('px')))
 
     @staticmethod
     def ease_in(t):
