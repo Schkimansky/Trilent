@@ -18,6 +18,6 @@ def generate_lists(name: str, type: str, start_value: Any, end_value: Any, mode:
     elif type == 'color':
         return color_gradient(start_value, end_value, 255)
     elif type == 'text':
-        return text_gradient(start_value, end_value, 100, mode)
+        return text_gradient(start_value, end_value, mode)
     else:
         raise NotImplementedError(f'Animations for "{name}" isn\'t supported yet. Type: {type}')

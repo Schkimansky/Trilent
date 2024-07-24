@@ -1,65 +1,53 @@
 
-def wave_text_gradient(str1, str2):
-    len1, len2 = len(str1), len(str2)
-    max_len = max(len1, len2)
+def samify(str1, str2, spacify=False):
+    if spacify:
+        str1 = str1.replace(' ', '⠀')
 
-    if len1 < max_len:
-        str1 += ' ' * (max_len - len1)
-    elif len2 < max_len:
-        str2 += ' ' * (max_len - len2)
+    if len(str1) < len(str2):
+        str1 += ' ' * (len(str2) - len(str1))
+    elif len(str1) > len(str2):
+        str2 += ' ' * (len(str1) - len(str2))
+
+    return str1, str2
+
+
+def redundantify(string):
+    return ' '.join(''.join(string).split()).rstrip()
+
+
+def text_gradient(str1, str2, mode):
+    spacify = False
+
+    if " | " in mode:
+        splitted = mode.split(' | ')
+        spacify  = bool(splitted[-1].lower())
+        mode     = ''.join(splitted[:-1])
+
+    str1, str2 = samify(str1, str2, spacify)
 
     transitions = [str1]
 
-    list1 = list(str1)
-    list2 = list(str2)
-
-    for i in range(max_len):
-        if list1[i] != list2[i]:
-            list1[i] = list2[i]
-            transitions.append(' '.join(''.join(list1).split()))
-
-    for i in range(len(transitions)):
-        if transitions[i] == ' ':
-            transitions.pop(i)
-        transitions[i] = transitions[i].rstrip()
-
-    return transitions
-
-
-def pulse_text_gradient(str1, str2):
-    center_index = len(str1) // 2
-
-    if len(str1) > len(str2):
-        while not len(str1) == len(str2):
-            str2 += " "
-
-    elif len(str1) < len(str2):
-        while not len(str1) == len(str2):
-            str1 += " "
-
-    transitions = []
-
     current = list(str1)
     goal = list(str2)
-
-    for transition in range(len(str1) - center_index):
-        current[center_index - transition] = goal[center_index - transition]
-        current[center_index + transition] = goal[center_index + transition]
-
-        transitions.append(' '.join(''.join(current).split()))
-
-    return transitions
-
-
-def text_gradient(text1, text2, steps, mode):
-    if mode == '':
-        mode = 'wave'
+    center_index = len(str1) // 2
+    size = len(str1) - 1
 
     if mode == 'wave' or mode == '':
-        return wave_text_gradient(text1, text2)
-    if mode == 'pulse':
-        return pulse_text_gradient(text1, text2)
+        for i in range(max(len(str1), len(str2))):
+            current[i] = goal[i]
+            transitions.append(redundantify(current))
+    elif mode == 'pulse':
+        for i in range(max(len(str1), len(str2)) // 2):
+            current[center_index - i] = goal[center_index - i]
+            current[center_index + i] = goal[center_index + i]
+            transitions.append(redundantify(current))
+    elif mode == 'roll':
+        for i in range(max(len(str1), len(str2))):
+            current[size - i] = goal[size - i]
+            transitions.append(redundantify(current))
+
+    return transitions
 
 
 if __name__ == '__main__':
-    print(text_gradient('Test.', 'Secondary text.', 3, 'pulse'))
+    print(text_gradient('Test.', 'Secondary text.', 'pulse'))

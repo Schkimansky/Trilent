@@ -8,18 +8,18 @@ class Box(Misc):
     def __init__(self,
                  parent,
                  # Utility
-                 width: int | str = None,        # Semi Function
-                 height: int | str = None,       # Semi Function
+                 alignment: str = None,
+                 side_alignment: str = None,
+                 width: int | str = None,
+                 height: int | str = None,
 
                  # Styling
                  # Color
-                 box_color: str = None,              # Needs Reload (QML, Slow)
+                 box_color: str = None,
                  # Fancy
                  corner_roundness: int | str = None,
 
                  # Flex Properties
-                 alignment: str = None,
-                 side_alignment: str = None,
                  wrap: bool = None,
                  gap: int | str = None,
                  vertical_gap: int | str = None):

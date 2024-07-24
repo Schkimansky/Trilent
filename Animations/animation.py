@@ -21,8 +21,17 @@ class Animation:
 
         self.start_value, self.end_value, self._type = generate_initials(name, end_value, widget)
 
+        self._current_value = self.start_value
+
         self.easing_function = generate_easing_function(curve)
         self.listings = generate_lists(name, self._type, self.start_value, self.end_value, mode)
+
+        if self.name == 'x':
+            self.setter = lambda v: self.widget.set_position(self._current_value, self.widget.y)
+        elif self.name == 'y':
+            self.setter = lambda v: self.widget.set_position(self.widget.x, self._current_value)
+        else:
+            self.setter = lambda v: self.widget.set(self.name, self._current_value)
 
         self._after_function = None
         self._stop_elapsed_time = 0
@@ -56,10 +65,7 @@ class Animation:
 
         self._current_value = self.listings[index]
 
-        if self.name in ['x', 'y']:
-            self.widget.set_position(self._current_value, self.widget.y) if self.name == 'x' else self.widget.set_position(self.widget.x, self._current_value)
-        else:
-            self.widget.set(self.name, self._current_value)
+        self.setter(self._current_value)
 
         if self._current_value == self.listings[-1]:
             self.window.remove_update_function(self.update)

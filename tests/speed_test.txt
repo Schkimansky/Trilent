@@ -1,0 +1,32 @@
+# Customtkinter
+# 170 ms to init
+# 188 ms to run and then instantly close without widgets.
+# 50ms for importing the library
+
+# 50ms total overhead added from 1 widget.
+# 70ms total overhead added from 2 widgets.
+# 520ms total overhead added from 100 widgets.
+# 3288ms total overhead added from 1000 widgets.
+
+# Additionally, its actually 20ms to actually render each widget, Which is done after the window is shown.
+# Max widget count before the user actually has to wait for it to render at startup: 10.
+# It doesn't render again if no changes are needed.
+# Resizing is a little jittery. Cant profile but I can notice it.
+# Ram usage: 40mb without widgets. 47mb with 100 widgets.
+
+# Trilent
+# 0.2 ms to init
+# 5 ms to run and then instantly close without widgets.
+# 80ms for importing the library (Qt is huge)
+
+# 1ms total overhead added from 1 widget.
+# 2ms total overhead added from 2 widgets.
+# 9ms total overhead added from 100 widgets.
+# 75ms total overhead added from 1000 widgets
+
+# Max widget count before the user actually has to wait for it to render at startup: 4000.
+# Doesn't render again if no changes needed too.
+# Resizing is insanely smooth.
+# Ram usage: 35mb without widgets. 41mb with 100 widgets.
+
+# Note that ram usage for both customtkinter and trilent is likely that high due to python being an interpreted language

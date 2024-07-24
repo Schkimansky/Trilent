@@ -4,6 +4,16 @@ from typing import List
 from .color import get_as_qt
 
 
+def split_rgb_format(rgb_string: str):
+    color_channels = [int(channel) for channel in
+                      rgb_string.removeprefix('rgb(').removeprefix('rgba(')[:-1].split(', ')]
+
+    if len(color_channels) == 3:
+        color_channels.append(255)
+
+    return color_channels
+
+
 def convert_hex_to_rgba(hex_color: str) -> list[int]:
     if hex_color.startswith('rgb(') or hex_color.startswith('rgba('):
         return split_rgb_format(hex_color)
@@ -19,16 +29,6 @@ def convert_hex_to_rgba(hex_color: str) -> list[int]:
 
 
 def convert_rgba_to_hex(r, g, b, a=255) -> str: return f'#{r:02x}{g:02x}{b:02x}{a:02x}'
-
-
-def split_rgb_format(rgb_string: str):
-    color_channels = [int(channel) for channel in
-                      rgb_string.removeprefix('rgb(').removeprefix('rgba(')[:-1].split(', ')]
-
-    if len(color_channels) == 3:
-        color_channels.append(255)
-
-    return color_channels
 
 
 @lru_cache(30)

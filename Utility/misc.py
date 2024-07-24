@@ -1,12 +1,61 @@
 from enum import Enum
 from trilent.Animations import Animation
+from PyQt6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
+from PyQt6.QtGui import QColor, QPainter
+from PyQt6.QtCore import Qt, QBuffer, QIODevice
+from PyQt6.QtSvg import QSvgGenerator
+from .color import get_as_raw_qt
+from typing import Any
+from numpy import array
+
+
+key_map = {
+    Qt.Key.Key_Up: "up",
+    Qt.Key.Key_Down: "down",
+    Qt.Key.Key_Left: "left",
+    Qt.Key.Key_Right: "right",
+    Qt.Key.Key_Space: "space",
+    Qt.Key.Key_Return: "enter",
+    Qt.Key.Key_Backspace: "backspace",
+    Qt.Key.Key_Tab: "tab",
+    Qt.Key.Key_Escape: "escape",
+    Qt.Key.Key_Delete: "delete",
+    Qt.Key.Key_Home: "home",
+    Qt.Key.Key_End: "end",
+    Qt.Key.Key_PageUp: "page up",
+    Qt.Key.Key_PageDown: "page down",
+    Qt.Key.Key_CapsLock: "caps lock",
+    Qt.Key.Key_Shift: "shift",
+    Qt.Key.Key_Control: "control",
+    Qt.Key.Key_Alt: "alt",
+    Qt.Key.Key_Meta: "meta"
+}
+
+
+def get_event_as_text(e):
+    text = e.text()
+    if text:
+        return text
+    else:
+        return key_map.get(e.key(), 'unknown')
+
 
 events_dictionary: dict[str, str] = {'wheel': 'wheelEvent',
                                      'drag': 'mouseMoveEvent',
                                      'hover': 'enterEvent',
                                      'unhover': 'leaveEvent',
                                      'clicked': 'mousePressEvent',
-                                     'unclicked': 'mouseReleaseEvent'}
+                                     'unclicked': 'mouseReleaseEvent',
+                                     'key press': 'keyPressEvent'}
+
+
+events_mappers: dict[str, Any] = {'wheel': lambda e, f: f(),
+                                  'drag': lambda e, f: f(),
+                                  'hover': lambda e, f: f(),
+                                  'unhover': lambda e, f: f(),
+                                  'clicked': lambda e, f: f(),
+                                  'unclicked': lambda e, f: f(),
+                                  'key press': lambda e, f: f(get_event_as_text(e))}
 
 
 class PositionTypes(Enum):
@@ -16,6 +65,9 @@ class PositionTypes(Enum):
 
 
 class Misc:
+    def __init__(self):
+        self._widget = QPushButton()
+
     def place(self, x: int = 100, y: int = 100):
         assert self._reloader.cp['parent']._position_children != PositionTypes.BOX, \
             TypeError("You cant place a widget whose parent is a box. Instead, Its position is automatically handled.")
@@ -77,14 +129,59 @@ class Misc:
 
     def get_top_parent(self): return self.get('parent').get_top_parent()
 
-    def connect(self, name, func): setattr(self._widget, events_dictionary[name], lambda e: func())
+    def connect(self, name, func):
+        caller = lambda e: events_mappers[name](e, func)
+        setattr(self._widget, events_dictionary[name], caller)
 
     def animate(self, time=0.3, curve='ease in out', animation_finished=lambda: ..., mode='', **kwargs):
         for i, (k, v) in enumerate(kwargs.items()):
             Animation(self, k, v, time=time, curve=curve, mode=mode, animation_finished=animation_finished if i == 0 else lambda: ...).start()
+
+    def effect(self, name, **kwargs):
+        if name == "shadow":
+            blur, x,  y, color = kwargs['blur'], kwargs['x'], kwargs['y'], kwargs['color']
+            effect = QGraphicsDropShadowEffect()
+            effect.setXOffset(x)
+            effect.setYOffset(y)
+            effect.setBlurRadius(blur)
+            effect.setColor(QColor(*get_as_raw_qt(color)))
+
+            self._widget.setGraphicsEffect(effect)
 
     def enable(self): self._widget.setDisabled(False)
     def disable(self): self._widget.setDisabled(True)
 
     def add_update_function(self, f):
         self.get_top_parent().add_update_function(f)
+
+    def get_pixel_data(self):
+        pixmap = self._widget.grab()
+
+        image = pixmap.toImage()
+
+        width = image.width()
+        height = image.height()
+
+        ptr = image.bits()
+        ptr.setsize(image.sizeInBytes())
+        arr = array(ptr).reshape((height, width, 4))
+
+        return arr
+
+    def get_as_svg(self):
+        buffer = QBuffer()
+        buffer.open(QIODevice.OpenModeFlag.ReadWrite)
+
+        svg_generator = QSvgGenerator()
+        svg_generator.setOutputDevice(buffer)
+        svg_generator.setSize(self._widget.size())
+        svg_generator.setViewBox(self._widget.rect())
+        svg_generator.setTitle("Widget as SVG")
+        svg_generator.setDescription("Trilent SVG")
+
+        painter = QPainter(svg_generator)
+        self._widget.render(painter)
+        painter.end()
+
+        buffer.seek(0)
+        return buffer.readData(buffer.size()).decode()

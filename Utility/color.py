@@ -56,6 +56,33 @@ def get_color_type(value: str):
     return value, color_type
 
 
+def split_rgb_format(rgb_string: str):
+    color_channels = [int(channel) for channel in
+                      rgb_string.removeprefix('rgb(').removeprefix('rgba(')[:-1].split(', ')]
+
+    if len(color_channels) == 3:
+        color_channels.append(255)
+
+    return color_channels
+
+
+def convert_hex_to_rgba(hex_color: str) -> list[int]:
+    if hex_color.startswith('rgb(') or hex_color.startswith('rgba('):
+        return split_rgb_format(hex_color)
+
+    hex_color = f"{hex_color[1:]}FF"
+
+    rgba = [int((hex_color + 'FF')[0:2], 16),
+            int((hex_color + 'FF')[2:4], 16),
+            int((hex_color + 'FF')[4:6], 16),
+            int((hex_color + 'FF')[6:8], 16)]
+
+    return rgba
+
+
+def convert_rgba_to_hex(r, g, b, a=255) -> str: return f'#{r:02x}{g:02x}{b:02x}{a:02x}'
+
+
 def hexa_to_rgba(hexa):
     r = int(hexa[1:3], 16)
     g = int(hexa[3:5], 16)
@@ -81,5 +108,25 @@ def get_as_qt(value):
         return f'rgba({split[0]},{split[1]},{split[2]},{split[3]})'
     elif color_type == 'gradient':
         return convert_gradient(value)
+
+    raise ValueError(f'Invalid color type: {value}')
+
+
+def get_as_raw_qt(value):
+    value, color_type = get_color_type(value)
+
+    if color_type == 'special':
+        return (0, 0, 0, 0)
+    elif color_type == 'hex':
+        return convert_hex_to_rgba(value)
+    elif color_type == 'long-hex':
+        return convert_hex_to_rgba(value)
+    elif color_type == 'rgb':
+        split = value.split(',')
+        return split + [255]
+    elif color_type == 'long-rgb':
+        return value.split(',')
+    elif color_type == 'gradient':
+        raise NotImplementedError('Raw conversion for gradients isnt supported yet.')
 
     raise ValueError(f'Invalid color type: {value}')

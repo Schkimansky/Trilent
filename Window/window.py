@@ -39,6 +39,8 @@ class Window(Misc):
         self._update_functions = []
         self.delta = 1
 
+        self._qt_function_handler = QIcon
+
         self._widget.setStyleSheet(f'background-color: {get_as_qt(background_color)};')
         self._widget.setWindowTitle(title)
         self._widget.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi), get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
