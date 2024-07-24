@@ -133,7 +133,7 @@ class Window(Misc):
         with open(os.path.join(current_directory, 'cache.svg'), 'w') as f:
             f.write(svg_data)
 
-        self.icon('cache.svg')
+        self.icon(os.path.join(current_directory, 'cache.svg'))
 
     def title(self, title): self._widget.setWindowTitle(title)
     def background_color(self, background_color): self._widget.setStyleSheet(f'background-color: {background_color};')
