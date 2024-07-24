@@ -123,10 +123,7 @@ class Window(Misc):
     def maximize(self): self._widget.showMaximized()
 
     def icon(self, path):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(current_dir, path)
-
-        icon = QIcon(icon_path)
+        icon = QIcon(path)
         self._widget.setWindowIcon(icon)
 
     def icon_data(self, svg_data):
