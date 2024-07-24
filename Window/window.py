@@ -29,7 +29,7 @@ class Window(Misc):
                  background_color='#212121',
 
                  icon=None,
-                 default_icon='empty.svg'):
+                 default_icon='empty'):
 
         self._update_timer = None
         self._previous_time = None
@@ -39,12 +39,15 @@ class Window(Misc):
         self._update_functions = []
         self.delta = 1
 
-        self._qt_function_handler = QIcon
+        default_icon_dict = {'empty': '''<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><rect width="16" height="16" fill="none" /><circle cx="8" cy="8" r="1" fill="black" fill-opacity="0.05" /></svg>'''}
 
         self._widget.setStyleSheet(f'background-color: {get_as_qt(background_color)};')
         self._widget.setWindowTitle(title)
         self._widget.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi), get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
-        self.icon(default_icon or icon)
+        if icon:
+            self.icon(icon)
+        else:
+            self.icon_data(default_icon_dict[default_icon])
 
         self._setup_delta_setter()
 
@@ -123,6 +126,12 @@ class Window(Misc):
 
         icon = QIcon(icon_path)
         self._widget.setWindowIcon(icon)
+
+    def icon_data(self, svg_data):
+        with open('cache.svg', 'w') as f:
+            f.write(svg_data)
+
+        self.icon('cache.svg')
 
     def title(self, title): self._widget.setWindowTitle(title)
     def background_color(self, background_color): self._widget.setStyleSheet(f'background-color: {background_color};')
