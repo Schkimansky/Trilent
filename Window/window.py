@@ -9,6 +9,8 @@ from functools import lru_cache
 from trilent.Widgets.widget import PositionTypes
 import os
 
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
 
 def has_parameter(func, param_names):
     return any(param_name in func.__code__.co_varnames for param_name in param_names)
@@ -128,7 +130,7 @@ class Window(Misc):
         self._widget.setWindowIcon(icon)
 
     def icon_data(self, svg_data):
-        with open('cache.svg', 'w') as f:
+        with open(os.path.join(current_directory, 'cache.svg'), 'w') as f:
             f.write(svg_data)
 
         self.icon('cache.svg')
