@@ -21,10 +21,10 @@ class Frame(Misc):
 
         # Reloader setup
         self._reloader = Reloader(parent.get_dpi(),
-                                  setup_properties  = {'parent': parent,   'width': width,          'height': height,         'frame_color': frame_color,   'corner_roundness': corner_roundness},
-                                  process_types     = {'parent': None,     'width': 'px-value;int', 'height': 'px-value;int', 'frame_color': 'color',       'corner_roundness': 'px-value'},
-                                  default_values    = {'parent': None,     'width': '3 inch',       'height': '2 inch',       'frame_color': 'transparent', 'corner_roundness': '0.03 inch'},
-                                  property_types    = {'parent': 'access', 'width': 'special',      'height': 'special',      'frame_color': 'stylesheet',  'corner_roundness': 'stylesheet'},
+                                  setup_properties  = {'parent': parent,   'width': width,          'height': height,         'frame_color': frame_color,      'corner_roundness': corner_roundness},
+                                  process_types     = {'parent': None,     'width': 'px-value;int', 'height': 'px-value;int', 'frame_color': 'color',          'corner_roundness': 'px-value'},
+                                  default_values    = {'parent': None,     'width': '3 inch',       'height': '2 inch',       'frame_color': '255,255,255,30', 'corner_roundness': '0.03 inch'},
+                                  property_types    = {'parent': 'access', 'width': 'special',      'height': 'special',      'frame_color': 'stylesheet',     'corner_roundness': 'stylesheet'},
                                   special_functions = {'width': width_func, 'height': height_func},
                                   base              = f"background-color: {V}frame_color{V}; border-radius: {V}corner_roundness{V}")
 
