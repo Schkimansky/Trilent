@@ -185,3 +185,6 @@ class Misc:
 
         buffer.seek(0)
         return buffer.readData(buffer.size()).decode()
+
+    def delete(self):
+        self._widget.setParent(None)
