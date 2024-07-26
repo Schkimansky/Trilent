@@ -148,6 +148,9 @@ class Misc:
 
             self._widget.setGraphicsEffect(effect)
 
+    def remove_effects(self):
+        self._widget.setGraphicsEffect(None)
+
     def enable(self): self._widget.setDisabled(False)
     def disable(self): self._widget.setDisabled(True)
 
