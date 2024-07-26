@@ -17,4 +17,4 @@ Animations | for x, y values                                - Finished
 
 ### Todo:
 
-Effects! - Todo
+Effects! - Almost done

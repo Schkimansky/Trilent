@@ -7,6 +7,7 @@ from trilent.Utility.color import get_as_qt
 from trilent.Utility.misc import Misc
 from functools import lru_cache
 from trilent.Widgets.widget import PositionTypes
+from time import time
 import os
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -140,12 +141,12 @@ class Window(Misc):
     def get_top_parent(self): return self
 
     def _setup_delta_setter(self):
-        self._previous_time = QTime.currentTime()
+        self._previous_time = time()
 
         def delta_update():
-            current_time = QTime.currentTime()
-            delta_time = self._previous_time.msecsTo(current_time) / 1000.0
+            current_time = time()
+
             self._previous_time = current_time
-            self.delta = delta_time
+            self.delta = current_time - self._previous_time
 
         self._update_functions.append(delta_update)
