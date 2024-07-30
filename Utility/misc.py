@@ -28,7 +28,16 @@ key_map = {
     Qt.Key.Key_Shift: "shift",
     Qt.Key.Key_Control: "control",
     Qt.Key.Key_Alt: "alt",
-    Qt.Key.Key_Meta: "meta"
+    Qt.Key.Key_Meta: "meta",
+    Qt.Key.Key_Plus: "plus",
+    Qt.Key.Key_Minus: "minus",
+    Qt.Key.Key_Asterisk: "asterisk",
+    Qt.Key.Key_Period: "period",
+    Qt.Key.Key_Comma: "comma",
+    Qt.Key.Key_Semicolon: "semicolon",
+    Qt.Key.Key_Slash: "slash",
+    Qt.Key.Key_Apostrophe: "apostrophe",
+    Qt.Key.Key_QuoteDbl: "quote double",
 }
 
 
@@ -46,7 +55,8 @@ events_dictionary: dict[str, str] = {'wheel': 'wheelEvent',
                                      'unhover': 'leaveEvent',
                                      'clicked': 'mousePressEvent',
                                      'unclicked': 'mouseReleaseEvent',
-                                     'key press': 'keyPressEvent'}
+                                     'key press': 'keyPressEvent',
+                                     'key release': 'keyReleaseEvent'}
 
 
 events_mappers: dict[str, Any] = {'wheel': lambda e, f: f(),
@@ -55,7 +65,9 @@ events_mappers: dict[str, Any] = {'wheel': lambda e, f: f(),
                                   'unhover': lambda e, f: f(),
                                   'clicked': lambda e, f: f(),
                                   'unclicked': lambda e, f: f(),
-                                  'key press': lambda e, f: f(get_event_as_text(e))}
+                                  'key press': lambda e, f: f(get_event_as_text(e)),
+                                  'key release': lambda e, f: f(get_event_as_text(e)),
+                                  }
 
 
 class PositionTypes(Enum):
