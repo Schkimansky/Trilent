@@ -66,8 +66,7 @@ events_mappers: dict[str, Any] = {'wheel': lambda e, f: f(),
                                   'clicked': lambda e, f: f(),
                                   'unclicked': lambda e, f: f(),
                                   'key press': lambda e, f: f(get_event_as_text(e)),
-                                  'key release': lambda e, f: f(get_event_as_text(e)),
-                                  }
+                                  'key release': lambda e, f: f(get_event_as_text(e))}
 
 
 class PositionTypes(Enum):
