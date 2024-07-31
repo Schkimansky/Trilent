@@ -12,6 +12,8 @@ import os
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
+default_icon_dict = {'empty': '''<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><rect width="16" height="16" fill="none" /><circle cx="8" cy="8" r="1" fill="black" fill-opacity="0.05" /></svg>'''}
+
 
 def has_parameter(func, param_names):
     return any(param_name in func.__code__.co_varnames for param_name in param_names)
@@ -40,21 +42,16 @@ class Window(Misc):
         self._position_children = PositionTypes.PLACE
         self._dpi = self.get_dpi()
         self._update_functions = []
-        self.delta = 1
-
-        default_icon_dict = {'empty': '''<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><rect width="16" height="16" fill="none" /><circle cx="8" cy="8" r="1" fill="black" fill-opacity="0.05" /></svg>'''}
+        self.delta = 0.01
 
         self._widget.setStyleSheet(f'background-color: {get_as_qt(background_color)};')
         self._widget.setWindowTitle(title)
         self._widget.setGeometry(get_in_pixels(x, self._dpi), get_in_pixels(y, self._dpi), get_in_pixels(width, self._dpi), get_in_pixels(height, self._dpi))
-        if icon:
-            self.icon(icon)
-        else:
-            self.icon_data(default_icon_dict[default_icon])
+
+        self.icon(icon) if icon else self.icon_data(default_icon_dict[default_icon])
 
         self._setup_delta_setter()
 
-    # Basic Methods
     def run(self, update=None, start=None, update_speed: int = 0):
         if update is not None:
             if has_parameter(update, ['delta', 'delta_time', 'elapsed_time', 'render_time', 'time_took_to_render']):
@@ -96,13 +93,6 @@ class Window(Misc):
                     self._widget.setWindowFlags(self._widget.windowFlags() | Qt.WindowType.Tool)
                 self._log('"Show at taskbar" may remove the starting animation of the window', warn)
 
-    @staticmethod
-    def _log(string, warn):
-        if warn:
-            print(string)
-            print('To disable this warning, Set warn=False')
-
-    # Utility Methods
     def close(self): self._app.quit()
     @lru_cache
     def get_dpi(self): return int(self._app.primaryScreen().logicalDotsPerInchX())
@@ -123,6 +113,11 @@ class Window(Misc):
     def minimize(self): self._widget.showMinimized()
     def maximize(self): self._widget.showMaximized()
 
+    def center(self):
+        monitor = self._widget.frameGeometry()
+        screen = QApplication.primaryScreen().availableGeometry()
+        self._widget.move((screen.width() - monitor.width()) // 2, (screen.height() - monitor.height()) // 2)
+
     def icon(self, path):
         icon = QIcon(path)
         self._widget.setWindowIcon(icon)
@@ -136,9 +131,9 @@ class Window(Misc):
     def title(self, title): self._widget.setWindowTitle(title)
     def background_color(self, background_color): self._widget.setStyleSheet(f'background-color: {background_color};')
 
-    def _get_holder(self): return self._widget
-
     def get_top_parent(self): return self
+
+    def _get_holder(self): return self._widget
 
     def _setup_delta_setter(self):
         self._previous_time = time()
@@ -150,3 +145,29 @@ class Window(Misc):
             self.delta = current_time - self._previous_time
 
         self._update_functions.append(delta_update)
+
+    @staticmethod
+    def _log(string, warn):
+        if warn:
+            print(string)
+            print('To disable this warning, Set warn=False')
+
+
+if __name__ == '__main__':
+    import trilent.Widgets as t
+
+    window = Window('Center method test', 800, 600)
+    window.center()
+
+    box = t.Box(window, width=window.width, height=window.height, alignment='center', side_alignment='center')
+
+    def changed(value):
+        window.set_size(value, 600)
+        box.set_size(window.width, window.height)
+
+        window.center()
+
+    slider = t.Slider(box, starting_value=200, minimum=200, maximum=400, command=changed)
+
+    changed(200)
+    window.run()
