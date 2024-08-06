@@ -7,7 +7,6 @@ from trilent.Utility.color import get_as_qt
 from trilent.Utility.misc import Misc
 from functools import lru_cache
 from trilent.Widgets.widget import PositionTypes
-from time import time
 import os
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -136,13 +135,14 @@ class Window(Misc):
     def _get_holder(self): return self._widget
 
     def _setup_delta_setter(self):
-        self._previous_time = time()
+        self._previous_time = QTime.currentTime()
 
         def delta_update():
-            current_time = time()
+            current_time = QTime.currentTime()
+            delta_time = self._previous_time.msecsTo(current_time) / 1000.0
 
             self._previous_time = current_time
-            self.delta = current_time - self._previous_time
+            self.delta = delta_time
 
         self._update_functions.append(delta_update)
 
@@ -159,15 +159,10 @@ if __name__ == '__main__':
     window = Window('Center method test', 800, 600)
     window.center()
 
-    box = t.Box(window, width=window.width, height=window.height, alignment='center', side_alignment='center')
+    for i in range(100):
+        t.Box(window, width=window.width, height=window.height, alignment='center', side_alignment='center')
 
-    def changed(value):
-        window.set_size(value, 600)
-        box.set_size(window.width, window.height)
+    def update(delta):
+        print(delta)
 
-        window.center()
-
-    slider = t.Slider(box, starting_value=200, minimum=200, maximum=400, command=changed)
-
-    changed(200)
-    window.run()
+    window.run(update)
