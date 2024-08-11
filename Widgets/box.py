@@ -73,6 +73,11 @@ class Box(Misc):
         widths = tuple(child.width for child in self._children)
         heights = tuple(child.height for child in self._children)
 
+        if len(widths) == 0 or len(heights) == 0:
+            # Return early so the entire system doesn't crash
+            # The current flexbox calculations assume that widths and heights aren't empty.
+            return
+
         flex_args = (self._reloader.process(k, self._reloader.cp[k]) for k in ['alignment', 'side_alignment', 'wrap', 'gap', 'vertical_gap'])
 
         main_axis = box(widths, heights, self.width, self.height, *flex_args)

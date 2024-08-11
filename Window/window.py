@@ -156,13 +156,13 @@ class Window(Misc):
 if __name__ == '__main__':
     import trilent.Widgets as t
 
-    window = Window('Center method test', 800, 600)
-    window.center()
+    window = Window()
 
-    for i in range(100):
-        t.Box(window, width=window.width, height=window.height, alignment='center', side_alignment='center')
+    box = t.Box(window, box_color='black',
+                width=window.width, height=window.height,
+                alignment='end', side_alignment='end')
 
-    def update(delta):
-        print(delta)
+    button1 = t.Button(box)
+    button2 = t.Button(box)
 
-    window.run(update)
+    window.run()
